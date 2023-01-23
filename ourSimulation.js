@@ -30,6 +30,7 @@ function create_player(id) {
 	player.vy = 0
 	player.ax = 0
 	player.ay = 0
+	player.boost = 0
 	player.id = id
 	players.push(player)
 	return player
@@ -72,13 +73,15 @@ function loop() {
 	for (let p of players) {
 		p.vx += (p.ax/(2**0.5)) 
 		p.vy -= (p.ay/(2**0.5)) 
+		p.vx = p.vx + (0.5*p.boost)
+		p.vy = p.vy + (0.5*p.boost)
 		p.vx = p.vx * 0.985
 		p.vy = p.vy * 0.985
-		p.vx = p.vx + p.boost
-		p.vy = p.vy + p.boost
 		p.x += p.vx * dt 
 		p.y += p.vy * dt 
 	}
+
+	
 
 	checkifoffmap()
 
