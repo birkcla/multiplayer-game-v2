@@ -73,16 +73,14 @@ function loop() {
 	for (let p of players) {
 		p.vx += (p.ax/(2**0.5)) 
 		p.vy -= (p.ay/(2**0.5)) 
-		//p.vx = p.vx + (0.5*p.boost)
-		//p.vy = p.vy - (0.5*p.boost)
 		p.vx = p.vx * (0.995 * (0.05*p.boost+1))
 		p.vy = p.vy * (0.995 * (0.05*p.boost+1)) //braucht noch ein speedlimit damit es spielbar ist
 		p.x += p.vx * dt 
 		p.y += p.vy * dt 
+
 	}
 
 	
-
 	checkifoffmap()
 
 	world.update();
@@ -133,4 +131,8 @@ function userchange(data) {
 
 //	}
 
+// Wenn Collsion gefunden wurde, dann Vektor zwischen zwei Kugeln berechnen. Spiegelachse an Vektor
+// auf die Kugeln. Für Apprallwinkel Vektor von Kugel auf Spiegelachse nehmen davon Aufprallwinkel ausrechen.
+// dann Aufprallwinkel-180Grad um Appralwinkel zu finden. Winkel zurück in Vektor umwandeln mithilfe von
+// Sin/Cosin. Für Impulserhaltung standart nehmen.
 
