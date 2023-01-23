@@ -42,7 +42,7 @@
         }
         async function connect() {
           sessionStorage.user = sessionStorage.user || `user-${Date.now().toString(32).slice(-8)}`;
-          ws = await WS.connect('kugelspiel4', sessionStorage.user);
+          ws = await WS.connect('kugelspiel5', sessionStorage.user);
           console.log(`${ws.username} connected!`, ws);
           //ws.onMessage((msg) => log(JSON.stringify(msg)));
           //ws.onUserStatus(showUsers);
