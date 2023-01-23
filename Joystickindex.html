@@ -22,11 +22,24 @@
         <circle class="innerCircle" r = "10" cx="50" cy="50" fill="rgb(255,0,0)"></circle>
       </svg>
     
-      <div><button>🐍</button></div>
+      <div><button>Boost</button></div>
     <script>
         var innerCircle = document.querySelector(".innerCircle")
         let ws
 
+        document.querySelector(".Boost").addEventListener("click", giveboost)
+
+        sendBoost = 0
+
+        function giveboost() {
+          sendBoost = 1
+          setTimeout(() => {
+            sendBoost = 0
+          }, 10000);
+
+        
+
+        }
         async function connect() {
           sessionStorage.user = sessionStorage.user || `user-${Date.now().toString(32).slice(-8)}`;
           ws = await WS.connect('kugelspiel4', sessionStorage.user);
@@ -55,7 +68,7 @@
             ysend = yin /30
 
 
-            ws.sendToOpener([xsend, ysend])
+            ws.sendToOpener([xsend, ysend, sendBoost])
             console.log(x, y);
             innerCircle.setAttribute("cx", xin + 50)
             innerCircle.setAttribute("cy", yin + 50)
