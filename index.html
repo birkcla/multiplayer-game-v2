@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <script src="js/pixi.js"></script>
+    <script src="js/pixi-helpers.js"></script>
+    <script src="js/simHelpers.js"></script>
+    <script src="WebsocketClient.js"></script>
+		<title>Simulation</title>
+    <style>
+		body, html {margin: 0; padding:0; background-color: black; overflow:hidden;}
+    .layout {display: flex;}
+    </style>
+  </head>
+<body>
+  <div class="layout">
+    <div class="game"></div>
+    <div><img src="img/qrcode.png"></div>
+  </div>
+  <script src="ourSimulation.js"></script>
+  <script>if(beforeStart) beforeStart();</script>
+</body>
+</html>
