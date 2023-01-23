@@ -70,12 +70,14 @@ function loop() {
 	
 
 	for (let p of players) {
-		p.vx += (p.ax/(2**0.5))
-		p.vy -= (p.ay/(2**0.5))
+		p.vx += (p.ax/(2**0.5)) 
+		p.vy -= (p.ay/(2**0.5)) 
 		p.vx = p.vx * 0.985
 		p.vy = p.vy * 0.985
-		p.x += p.vx * dt * (2*boost)
-		p.y += p.vy * dt * (2*boost)
+		p.vx = p.vx + p.boost
+		p.vy = p.vy + p.boost
+		p.x += p.vx * dt 
+		p.y += p.vy * dt 
 	}
 
 	checkifoffmap()
