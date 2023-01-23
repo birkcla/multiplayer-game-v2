@@ -74,8 +74,8 @@ function loop() {
 		p.vy -= (p.ay/(2**0.5))
 		p.vx = p.vx * 0.985
 		p.vy = p.vy * 0.985
-		p.x += p.vx * dt 
-		p.y += p.vy * dt 
+		p.x += p.vx * dt * (2*boost)
+		p.y += p.vy * dt * (2*boost)
 	}
 
 	checkifoffmap()
