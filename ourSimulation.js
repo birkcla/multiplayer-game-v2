@@ -98,6 +98,7 @@ function message(msg) {
 	player = findPlayerById(input.from)
 	player.ax = input.data[0]
 	player.ay = input.data[1]
+	player.boost = input.data[2]	//boost dazubauen
 }
 
 function findPlayerById(id) {
