@@ -21,8 +21,8 @@
         <circle r = "40" cx="50" cy="50"></circle>
         <circle class="innerCircle" r = "10" cx="50" cy="50" fill="rgb(255,0,0)"></circle>
       </svg>
-    
-      <div><button>Boost</button></div>
+      
+      <div><button class="Boost">Boost</button></div>
     <script>
         var innerCircle = document.querySelector(".innerCircle")
         let ws
@@ -67,7 +67,7 @@
             xsend = xin /30
             ysend = yin /30
 
-
+            //asfhkl
             ws.sendToOpener([xsend, ysend, sendBoost])
             console.log(x, y);
             innerCircle.setAttribute("cx", xin + 50)
