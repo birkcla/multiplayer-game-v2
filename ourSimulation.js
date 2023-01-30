@@ -1,12 +1,12 @@
-circlesize = 30
+circlesize = 60
 function buildWorld() {
 	
 	world = new World({
-		hUnits: 100,
+		hUnits: 150,
 		wPx: window.innerHeight,
 		coords: {step: 10},
 		unit: "m",
-		minUnits: {x: -50, y: -50},
+		minUnits: {x: -85, y: -75},
 		fontColor: "#ffffff"
 	});
 
@@ -30,6 +30,7 @@ function create_player(id) {
 	player.vy = 0
 	player.ax = 0
 	player.ay = 0
+	player.boost = 0
 	player.id = id
 	players.push(player)
 	return player
@@ -70,14 +71,16 @@ function loop() {
 	
 
 	for (let p of players) {
-		p.vx += (p.ax/(2**0.5))
-		p.vy -= (p.ay/(2**0.5))
-		p.vx = p.vx * 0.985
-		p.vy = p.vy * 0.985
+		p.vx += (p.ax/(2**0.5)) 
+		p.vy -= (p.ay/(2**0.5)) 
+		p.vx = p.vx * (0.995 * (0.05*p.boost+1))
+		p.vy = p.vy * (0.995 * (0.05*p.boost+1)) //braucht noch ein speedlimit damit es spielbar ist
 		p.x += p.vx * dt 
 		p.y += p.vy * dt 
+
 	}
 
+	
 	checkifoffmap()
 
 	world.update();
@@ -87,7 +90,7 @@ function loop() {
 
 async function startSocket() {
 	sessionStorage.user = sessionStorage.user || `Host`;
-	const ws = await WS.connect('kugelspiel4', sessionStorage.user);
+	const ws = await WS.connect('kugelspiel5', sessionStorage.user);
 	console.log(`${ws.username} connected!`, ws);
 	ws.onMessage(message);
 	ws.onUserStatus(userchange)
@@ -100,6 +103,7 @@ function message(msg) {
 	player = findPlayerById(input.from)
 	player.ax = input.data[0]
 	player.ay = input.data[1]
+	player.boost = input.data[2]	//boost dazubauen
 }
 
 function findPlayerById(id) {
