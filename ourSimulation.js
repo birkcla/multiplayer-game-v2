@@ -73,11 +73,12 @@ function loop() {
 	for (let p of players) {
 		p.vx += (p.ax/(2**0.5)) 
 		p.vy -= (p.ay/(2**0.5)) 
-		p.vx = p.vx * (0.995 * (0.05*p.boost+1))
-		p.vy = p.vy * (0.995 * (0.05*p.boost+1)) //braucht noch ein speedlimit damit es spielbar ist
+		p.vx = p.vx 
+		p.vy = p.vy 
 		p.x += p.vx * dt 
 		p.y += p.vy * dt 
-
+/* (0.995 * (0.05*p.boost+1))
+/* (0.995 * (0.05*p.boost+1)) //braucht noch ein speedlimit damit es spielbar ist
 	}
 
 	
