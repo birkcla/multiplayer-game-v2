@@ -21,28 +21,15 @@
         <circle r = "40" cx="50" cy="50"></circle>
         <circle class="innerCircle" r = "10" cx="50" cy="50" fill="rgb(255,0,0)"></circle>
       </svg>
-      
-      <div><button class= "Boost" >Boost</button></div>
+    
+      <div><button>🐍</button></div>
     <script>
         var innerCircle = document.querySelector(".innerCircle")
         let ws
 
-        document.querySelector(".Boost").addEventListener("click", giveboost)
-
-        sendBoost = 0
-
-        function giveboost() {
-          sendBoost = 1
-          setTimeout(() => {
-            sendBoost = 0
-          }, 10000);
-
-        
-
-        }
         async function connect() {
           sessionStorage.user = sessionStorage.user || `user-${Date.now().toString(32).slice(-8)}`;
-          ws = await WS.connect('kugelspiel5', sessionStorage.user);
+          ws = await WS.connect('kugelspiel4', sessionStorage.user);
           console.log(`${ws.username} connected!`, ws);
           //ws.onMessage((msg) => log(JSON.stringify(msg)));
           //ws.onUserStatus(showUsers);
@@ -67,8 +54,8 @@
             xsend = xin /30
             ysend = yin /30
 
-            //asfhkl
-            ws.sendToOpener([xsend, ysend, sendBoost])
+
+            ws.sendToOpener([xsend, ysend])
             console.log(x, y);
             innerCircle.setAttribute("cx", xin + 50)
             innerCircle.setAttribute("cy", yin + 50)
@@ -78,7 +65,7 @@
          document.addEventListener("touchend", (event)=>{
             innerCircle.setAttribute("cx", 50)
             innerCircle.setAttribute("cy", 50)
-            ws.sendToOpener([0,0, 0])
+            ws.sendToOpener([0,0])
         })
 
     </script>
