@@ -81,6 +81,8 @@ function loop() {
 	checkifoffmap()
 
 	world.update();
+
+	checkcollision(7)
 }
 
 async function startSocket() {
@@ -122,9 +124,59 @@ function userchange(data) {
 	
 }
 
-//checkcollision()
-//	for (let p in players){
+function checkcollision(radius){
+	count = 0
+	for (let p in players){
+		count += 1
+		for (let p2 in players.slice(count)){
+			distancex = p.x - p2.x
+			distancey = p.y - p2.y
+			distance = (distancex**2 + distancey**2)**0.5
 
-//	}
+			if (distance <= radius) {
+				collide(p, p2)
+			}
+
+		}
+	}
+}
+
+function collide(p1, p2) {
+	nvrawx = p1.x - p2.x
+	nvrawy = p1.y - p2.y
+	betrag = (nvrawx**2 + nvrawy**2)**0.5
+	nvx = nvrawx / betrag
+	nvy = nvrawy / betrag
+
+	skalarproduktp1 = (p1.x * nvx) + (p1.y * nvy)
+	skalarproduktp2 = (p2.x * nvx) + (p2.y * nvy)
+
+	//velocity assignement
+	p1velnorx = skalarproduktp1 * nvx
+	p1velnory = skalarproduktp1 * nvy
+
+	p1veltanx = p1.vx - p1velnorx
+	p1veltany = p1.vy - p1velnory
+
+	p2velnorx = skalarproduktp2 * nvx
+	p2velnory = skalarproduktp2 * nvy
+
+	p2veltanx = p2.vx - p2velnorx
+	p2veltany = p2.vy - p2velnory
+
+	p1vnx = p1veltanx + p2velnorx
+	p1vny = p1veltany + p2velnory
+
+	p2vnx = p2veltanx + p1velnorx
+	p2vny = p2veltany + p1velnory
 
 
+
+	p1.vx = p1vnx
+	p1.vy = p1vny
+
+	p2.vx = p2vnx
+	p2.vy = p2vny
+	
+
+}
