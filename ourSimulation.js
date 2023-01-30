@@ -77,7 +77,12 @@ function loop() {
 		p.vy = Math.log(p.vy) / Math.log(2) 			//* (0.995 * (0.05*p.boost+1)) //braucht noch ein speedlimit damit es spielbar ist
 		p.x += p.vx * dt 
 		p.y += p.vy * dt 
+<<<<<<< HEAD
+//* (0.995 * (0.05*p.boost+1))
+//* (0.995 * (0.05*p.boost+1)) //braucht noch ein speedlimit damit es spielbar ist
+=======
 
+>>>>>>> c5a3c8a3d358f7fc1d7377f678546410f5f2d82d
 
 	}
 
