@@ -22,10 +22,12 @@
         <circle class="innerCircle" r = "10" cx="50" cy="50" fill="rgb(255,0,0)"></circle>
       </svg>
     
-      <div><button>🐍</button></div>
+      <div><button class="Boost">Boost</button></div>
     <script>
         var innerCircle = document.querySelector(".innerCircle")
         let ws
+
+        document.querySelector(".Boost").addEventListener("click", sendBoost)
 
         async function connect() {
           sessionStorage.user = sessionStorage.user || `user-${Date.now().toString(32).slice(-8)}`;
@@ -35,6 +37,11 @@
           //ws.onUserStatus(showUsers);
         }
 
+        Boostsend = 0
+
+        function sendBoost() {
+          Boostsend = 1
+        }
         connect()
 
          document.addEventListener("touchmove", (event)=>{
@@ -55,7 +62,7 @@
             ysend = yin /30
 
 
-            ws.sendToOpener([xsend, ysend])
+            ws.sendToOpener([xsend, ysend, Boostsend])
             console.log(x, y);
             innerCircle.setAttribute("cx", xin + 50)
             innerCircle.setAttribute("cy", yin + 50)
@@ -65,7 +72,7 @@
          document.addEventListener("touchend", (event)=>{
             innerCircle.setAttribute("cx", 50)
             innerCircle.setAttribute("cy", 50)
-            ws.sendToOpener([0,0])
+            ws.sendToOpener([0,0,0])
         })
 
         // für link zu Joystick URL MichaPluess.github.io/Multiplayer-Game/Joystickindex.html
