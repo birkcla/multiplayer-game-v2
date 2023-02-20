@@ -52,7 +52,14 @@ function setup() {
 	dt = 0.016;       // Zeitschritt in Sekunden
 
 
-	//create_player()
+	testi1 = create_player("testi1")
+	testi1.x = 10
+
+	testi2 = create_player("testi2")
+	testi2.x = 20
+	testi2.y = 16
+	testi2.vx = -5
+	testi2.vy = -8
 
 }
 
@@ -69,12 +76,13 @@ function setup() {
 function loop() {
 
 	
+	
 
 	for (let p of players) {
 		p.vx += (p.ax/(2**0.5)) 
 		p.vy -= (p.ay/(2**0.5)) 
-		p.vx = Math.log(p.vx) / Math.log(2) 			//* (0.995 * (0.05*p.boost+1))
-		p.vy = Math.log(p.vy) / Math.log(2) 			//* (0.995 * (0.05*p.boost+1)) //braucht noch ein speedlimit damit es spielbar ist
+		p.vx = 0.995 * p.vx
+		p.vy = 0.995 * p.vy 			//* (0.995 * (0.05*p.boost+1)) //braucht noch ein speedlimit damit es spielbar ist
 		p.x += p.vx * dt 
 		p.y += p.vy * dt 
 //* (0.995 * (0.05*p.boost+1))
@@ -102,6 +110,7 @@ async function startSocket() {
 function message(msg) {
 	input = msg
 	console.log(input)
+	
 	player = findPlayerById(input.from)
 	player.ax = input.data[0]
 	player.ay = input.data[1]
@@ -135,12 +144,14 @@ function checkcollision(radius){
 	for (let p in players){
 		count += 1
 		for (let p2 in players.slice(count)){
+			debugger
 			distancex = p.x - p2.x
 			distancey = p.y - p2.y
 			distance = (distancex**2 + distancey**2)**0.5
 
 			if (distance <= radius) {
 				collide(p, p2)
+				debugger
 			}
 
 		}
