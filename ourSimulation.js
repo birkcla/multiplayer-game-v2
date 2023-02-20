@@ -92,7 +92,7 @@ function loop() {
 
 async function startSocket() {
 	sessionStorage.user = sessionStorage.user || `Host`;
-	const ws = await WS.connect('kugelspiel5', sessionStorage.user);
+	const ws = await WS.connect('kugelspiel6', sessionStorage.user);
 	console.log(`${ws.username} connected!`, ws);
 	ws.onMessage(message);
 	ws.onUserStatus(userchange)
