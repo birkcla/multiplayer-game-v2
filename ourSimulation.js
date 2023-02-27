@@ -141,17 +141,15 @@ function userchange(data) {
 
 function checkcollision(radius){
 	count = 0
-	for (let p in players){
+	for (let p of players){
 		count += 1
-		for (let p2 in players.slice(count)){
-			debugger
+		for (let p2 of players.slice(count)){
 			distancex = p.x - p2.x
 			distancey = p.y - p2.y
 			distance = (distancex**2 + distancey**2)**0.5
 
 			if (distance <= radius) {
 				collide(p, p2)
-				debugger
 			}
 
 		}
@@ -162,25 +160,32 @@ function collide(p1, p2) {
 	nvrawx = p1.x - p2.x
 	nvrawy = p1.y - p2.y
 	betrag = (nvrawx**2 + nvrawy**2)**0.5
+
+	//normalvektor achse
 	nvx = nvrawx / betrag
 	nvy = nvrawy / betrag
 
-	skalarproduktp1 = (p1.x * nvx) + (p1.y * nvy)
-	skalarproduktp2 = (p2.x * nvx) + (p2.y * nvy)
+	//vektobetrag entlang normalachse
+	skalarproduktp1 = (p1.vx * nvx) + (p1.vy * nvy)
+	skalarproduktp2 = (p2.vx * nvx) + (p2.vy * nvy)
 
-	//velocity assignement
+	
+	//vektorbetrag  entlang normalachse aufteilung auf x y
 	p1velnorx = skalarproduktp1 * nvx
 	p1velnory = skalarproduktp1 * nvy
-
-	p1veltanx = p1.vx - p1velnorx
-	p1veltany = p1.vy - p1velnory
 
 	p2velnorx = skalarproduktp2 * nvx
 	p2velnory = skalarproduktp2 * nvy
 
+	//vektorbetrag entlang tangens achse aufteilung auf x y
+	p1veltanx = p1.vx - p1velnorx
+	p1veltany = p1.vy - p1velnory
+
 	p2veltanx = p2.vx - p2velnorx
 	p2veltany = p2.vy - p2velnory
 
+
+	//addistion der beiden vektoren
 	p1vnx = p1veltanx + p2velnorx
 	p1vny = p1veltany + p2velnory
 
@@ -188,7 +193,7 @@ function collide(p1, p2) {
 	p2vny = p2veltany + p1velnory
 
 
-
+	//zuweisung
 	p1.vx = p1vnx
 	p1.vy = p1vny
 
