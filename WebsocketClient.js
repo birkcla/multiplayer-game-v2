@@ -79,5 +79,6 @@ class WS {
   }
   static _onError(e) {
     console.warn(e);
+    
   }
 }
