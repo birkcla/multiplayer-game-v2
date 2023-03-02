@@ -1,4 +1,35 @@
 circlesize = 60
+color = [Math.floor(Math.random() * 360), ((Math.floor(Math.random() * 4) * 20) + 40), ((Math.floor(Math.random() * 4) * 20) + 40)]
+console.log(color);
+
+
+
+
+async function startSocket() {
+	sessionStorage.user = sessionStorage.user || `Host`;
+	ws = await WS.connect('kugelspiel6', sessionStorage.user);
+	console.log(`${ws.username} connected!`, ws);
+	ws.onMessage(message);
+	ws.onUserStatus(userchange);	
+}
+
+function changecolor(){
+	color[0] = (color[0] + 60) %360
+	color[1] += 20
+	color[2] += 20
+
+	if (color[1] > 100) {
+		color[1] -= 80
+	}
+
+	if (color[2] > 100) {
+		color[2] -= 80
+	}
+}
+
+
+
+
 function buildWorld() {
 	
 	world = new World({
@@ -17,7 +48,8 @@ function buildWorld() {
 	//flugi = new Actor({img: "img/flugi50.png", x: -40, y: 60, wUnits: 14});
 	//glider = new Actor({img: "img/Segelflieger50.png", x: 0, y: 100, wUnits: 14});
 
-	startSocket()
+	ws = startSocket()
+
 }
 
 players = []
@@ -33,6 +65,9 @@ function create_player(id) {
 	player.boost = 0
 	player.id = id
 	players.push(player)
+	player.color = color
+	changecolor()
+	
 	return player
 }
 
@@ -98,13 +133,6 @@ function loop() {
 	checkcollision(7)
 }
 
-async function startSocket() {
-	sessionStorage.user = sessionStorage.user || `Host`;
-	const ws = await WS.connect('kugelspiel6', sessionStorage.user);
-	console.log(`${ws.username} connected!`, ws);
-	ws.onMessage(message);
-	ws.onUserStatus(userchange)
-}
 
 
 function message(msg) {
@@ -115,6 +143,7 @@ function message(msg) {
 	player.ax = input.data[0]
 	player.ay = input.data[1]
 	player.boost = input.data[2]	//boost dazubauen
+
 }
 
 function findPlayerById(id) {
@@ -126,12 +155,15 @@ function findPlayerById(id) {
 	return false
 }
 
+
 function userchange(data) {
 	console.log(data);
 	for (let i of data.slice(1)){
 		player = findPlayerById(i)
 		if (!player){
-			create_player(i)
+			player = create_player(i)
+			msg = ['color', player.color[0], player.color[1], player.color[2]]
+			ws.sendToUser(msg, i)
 		}
 		
 
@@ -202,3 +234,9 @@ function collide(p1, p2) {
 	
 
 }
+
+
+
+
+
+
