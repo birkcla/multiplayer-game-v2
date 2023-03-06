@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html>
+
+
+<!-- initialisation of script data usw.... -->
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Game</title>
@@ -7,32 +10,96 @@
     <meta name="author" content="author" />
     <meta name="keywords" content="keywords" />
     <style type="text/css">
-    body { overscroll-behavior: contain; width: auto; }
+    body {overscroll-behavior: contain; width: auto; align-items: center;    }
     html { overscroll-behavior: contain;  }
     svg {width: 90vmin;}
-    button {width: 90vmin; padding:20px;
+    /* button {width: 90vmin; padding:20px;} */
+
+    #pre-game-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color:black;
+      opacity: 1;
+      z-index: 100;
+      display: block;
+      pointer-events: auto;
+      
     }
+
+    #after-game-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color:black;
+      opacity: 1;
+      z-index: 100;
+      display: none;
+      pointer-events: auto;
+    }
+
+    .loadbutton {
+      position:fixed;
+      left:50%;
+      top: 50%;
+      transform: translateX(-50%);
+      height:20vmin;
+      width:90vmin;
+      background-color: antiquewhite;
+      opacity: 1;
+      z-index: 101;
+      font-size: 400%;
+      font-style:normal;
+      font-weight: bold;
+
+    }
+
     </style>
     <script src="WebsocketClient.js"></script>
 
     <script src="hsv-hex-convert.js"></script>
   </head>
 
+
+
+
+
+
+
   <body>
-    ##fill="rgb(255,0,0)" irgendwo
     <svg viewBox="0 0 100 100">
         <circle r = "40" cx="50" cy="50"></circle>
         <circle class="innerCircle" r = "10" cx="50" cy="50" fill="rgb(255,0,0)"></circle>
-      </svg>
+    </svg>
+
+    <div id="pre-game-screen">
+      <button class="loadbutton">Start Game</button>
+    </div>
+
+    <div id="after-game-screen">
+      <button class="loadbutton">Restart Game</button>
+    </div>
     
-      <div><button class="Boost">Boost V6</button></div>
+
+    <!-- <div><button class="Boost">Boost V6</button></div> -->
       
     <script>
       
         var innerCircle = document.querySelector(".innerCircle")
         let ws
+        
+        
+        const loadbutton = document.querySelector('.loadbutton');
+          loadbutton.addEventListener('click', ()=>{
+            loadgame()
+            document.querySelector('#pre-game-screen').style.display = 'none';
+          })
 
-        document.querySelector(".Boost").addEventListener("click", sendBoost)
+        // document.querySelector(".Boost").addEventListener("click", sendBoost)
 
         async function connect() {
           sessionStorage.user = sessionStorage.user || `user-${Date.now().toString(32).slice(-8)}`;
@@ -42,31 +109,11 @@
           //ws.onUserStatus(showUsers);
         }
         
-
-        function onMessage(msg) {
-          console.log(msg)
-          if (msg.data[0] == 'color') {
-            msgd = msg.data
-            playercolor = [msgd[1], msgd[2], msgd[3]]
-            console.log('setting color to:', playercolor)
-            const colorhex = hsvToHex(playercolor)
-            console.log(colorhex)
-            document.body.style.backgroundColor = colorhex;
-
-          if (msg.data[0] == 'color') {}
-
+        function loadgame() {
+          connect()
           
-          }
-        }
 
-        Boostsend = 0
-
-        function sendBoost() {
-          Boostsend = 1
-        }
-        connect()
-
-         document.addEventListener("touchmove", (event)=>{
+          document.addEventListener("touchmove", (event)=>{
             mindim = Math.min(window.innerWidth, window.innerHeight)
             px = event.touches[0].pageX
             py = event.touches[0].pageY
@@ -89,13 +136,47 @@
             innerCircle.setAttribute("cx", xin + 50)
             innerCircle.setAttribute("cy", yin + 50)
             event.preventDefault()
-        })
+          })
 
-         document.addEventListener("touchend", (event)=>{
+          document.addEventListener("touchend", (event)=>{
             innerCircle.setAttribute("cx", 50)
             innerCircle.setAttribute("cy", 50)
             ws.sendToOpener([0,0,0])
-        })
+          })
+        }
+
+
+
+
+
+        function onMessage(msg) {
+          console.log(msg)
+          if (msg.data[0] == 'color') {
+            msgd = msg.data
+            playercolor = [msgd[1], msgd[2], msgd[3]]
+            console.log('setting color to:', playercolor)
+            const colorhex = hsvToHex(playercolor)
+            console.log(colorhex)
+            document.body.style.backgroundColor = colorhex;
+          }
+          if (msg.data[0] == 'GameOver') {
+            documen.querySelector('#after-game-screen').style.display = block;
+          }
+
+          
+          
+        }
+
+        Boostsend = 0
+
+        function sendBoost() {
+          Boostsend = 1
+        }
+
+
+    
+
+
 
         // für link zu Joystick URL MichaPluess.github.io/Multiplayer-Game/Joystickindex.html
 

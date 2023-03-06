@@ -202,7 +202,10 @@ class Circle {
     this.world.actors.push(this)
     this.world.stage.addChild(this.graphic);
     this.world.renderer.render(world.stage);
+
   }
+
+
   destroy() {
     this.world.stage.removeChild(this.graphicscircle);
   }

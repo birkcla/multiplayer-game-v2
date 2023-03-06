@@ -46,12 +46,11 @@ function buildWorld() {
 
 	//l = drawLine({from: {x: 0, y: 100}, to: {x: 6000, y: 0}})
 	//world.add(l)
-
-	circle = new PassiveSprite({img: "img/circle.png", x: 0, y: 0, wUnits: 2*circlesize})
-	//flugi = new Actor({img: "img/flugi50.png", x: -40, y: 60, wUnits: 14});
-	//glider = new Actor({img: "img/Segelflieger50.png", x: 0, y: 100, wUnits: 14});
-
-	c1 = new Circle({r:10, color: 0x440099})
+	
+	temp = hsvToHex([0, 0, 100])
+	circlecolor = parseInt(temp.slice(1), 16)
+	//circle = new PassiveSprite({x: 0, y: 0, wUnits: 2*circlesize, color: circlecolor})
+	worldcircle = new Circle({r: circlesize, x: 0, y: 0, color: circlecolor}) 
 
 	ws = startSocket()
 
@@ -83,12 +82,18 @@ function create_player(id) {
 function checkifoffmap() {
 	for (let p of players) {
 		if (p.x**2 + p.y**2 > (circlesize/25*26)**2) {
-			p.x = -420000
-			ws.sendToUser(p.id, 'GameOver')
-			players = players.filter(function(name) {return name !== p.id})
+			killplayer(p)
 		}
 	}
 }
+
+function killplayer(p) {
+	//p.x = -420000
+	ws.sendToUser('GameOver', p.id)
+	players = players.filter(function(name) {return name !== p.id})
+	p.stepstogo = 128
+}
+
 
 
 
@@ -103,8 +108,8 @@ function setup() {
 	testi2 = create_player("testi2")
 	testi2.x = 20
 	testi2.y = 16
-	testi2.vx = -5
-	testi2.vy = -8
+	testi2.vx = -50
+	testi2.vy = -80
 
 }
 
