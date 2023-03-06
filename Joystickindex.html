@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hello!</title>
+    <title>Game</title>
     <meta name="description" content="description"/>
     <meta name="author" content="author" />
     <meta name="keywords" content="keywords" />
@@ -49,9 +49,13 @@
             msgd = msg.data
             playercolor = [msgd[1], msgd[2], msgd[3]]
             console.log('setting color to:', playercolor)
-            const colorhex = hsvToHex(playercolor[0], playercolor[1], playercolor[2])
+            const colorhex = hsvToHex(playercolor)
             console.log(colorhex)
             document.body.style.backgroundColor = colorhex;
+
+          if (msg.data[0] == 'color') {}
+
+          
           }
         }
 

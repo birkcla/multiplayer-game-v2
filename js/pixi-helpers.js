@@ -157,34 +157,58 @@ function drawArrow(params) {
   return arrow;
 }
 
-/** function drawLine()
- * 
- * @param {object} params from, x1, y1, to, x2, y2, color, thickness, alpha
- * @returns {undefined}
- */
-function drawLine(params) {
-  var params = params || {};
-  params.from = params.from || {};
-  params.to = params.to || {};
-  var x1 = params.x1 || params.from.x || 0;
-  var y1 = params.y1 || params.from.y || 0;
-  var x2 = params.x2 || params.to.x || 0;
-  var y2 = params.y2 || params.to.y || 0;
-  var color = params.color || 0x000099;
-  //console.log(color);
-  var thickness = params.thickness || 3;
-  var alpha = params.alpha || 1;
+class Line {
+  constructor(params) {
+    var params = params || {};
+    this.world = params.world || world;
+    params.from = params.from || {};
+    params.to = params.to || {};
+    var x1 = this.world.xToPx(params.x1 || params.from.x || 0);
+    var y1 = this.world.yToPx(params.y1 || params.from.y || 0);
+    var x2 = this.world.xToPx(params.x2 || params.to.x || 0);
+    var y2 = this.world.yToPx(params.y2 || params.to.y || 0);
+    var color = params.color || 0x000099;
+    var thickness = params.thickness || 3;
+    var alpha = params.alpha || 1;
 
-  var line = new PIXI.Graphics();
-  
-  line.lineStyle(thickness, color, alpha);
-  line.moveTo(x1, y1);
-  line.lineTo(x2, y2);
-  
-  //stage.addChild(line);
-  //renderer.render(stage);
-  
-  return line;
+    this.graphicsline = new PIXI.Graphics();
+    
+    this.graphicsline.lineStyle(thickness, color, alpha);
+    this.graphicsline.moveTo(x1, y1);
+    this.graphicsline.lineTo(x2, y2);
+    
+    this.world.stage.addChild(this.graphicsline);
+    this.world.renderer.render(world.stage);
+  }
+  destroy() {
+    this.world.stage.removeChild(this.graphicsline);
+  }
+}
+
+class Circle {
+  constructor(params) {
+    var params = params || {};
+    this.world = params.world || world;
+    this.x = params.x || 0;
+    this.y = params.y || 0;
+    this.color = params.color || 0xaa0000;
+    this.alpha = params.alpha || 1;
+    this.r = params.r || 1;
+    this.graphic = new PIXI.Graphics();
+    this.graphic.beginFill(this.color);
+    this.graphic.drawCircle(0, 0, world.pxPerUnit * this.r);
+    this.graphic.endFill();
+    this.draw()
+    this.world.actors.push(this)
+    this.world.stage.addChild(this.graphic);
+    this.world.renderer.render(world.stage);
+  }
+  destroy() {
+    this.world.stage.removeChild(this.graphicscircle);
+  }
+  draw() {
+    this.graphic.position = this.world.unitsToPx(this);
+  }
 }
 
 function PassiveSprite(params) {
@@ -259,4 +283,3 @@ PIXI.DisplayObjectContainer.prototype.removeAll = function()
     this.removeChild(this.children[0]);
   }
 };
-

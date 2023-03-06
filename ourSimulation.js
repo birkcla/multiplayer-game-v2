@@ -1,17 +1,20 @@
+
+
 circlesize = 60
-color = [Math.floor(Math.random() * 360), ((Math.floor(Math.random() * 4) * 20) + 40), ((Math.floor(Math.random() * 4) * 20) + 40)]
+color = [(Math.floor(Math.random() * 12)*30), ((Math.floor(Math.random() * 3) * 20) + 60), ((Math.floor(Math.random() * 4) * 20) + 40)]
 console.log(color);
 
 
-
+let ws;
 
 async function startSocket() {
 	sessionStorage.user = sessionStorage.user || `Host`;
 	ws = await WS.connect('kugelspiel6', sessionStorage.user);
 	console.log(`${ws.username} connected!`, ws);
 	ws.onMessage(message);
-	ws.onUserStatus(userchange);	
-}
+	ws.onUserStatus(userchange);
+}	
+
 
 function changecolor(){
 	color[0] = (color[0] + 60) %360
@@ -48,6 +51,8 @@ function buildWorld() {
 	//flugi = new Actor({img: "img/flugi50.png", x: -40, y: 60, wUnits: 14});
 	//glider = new Actor({img: "img/Segelflieger50.png", x: 0, y: 100, wUnits: 14});
 
+	c1 = new Circle({r:10, color: 0x440099})
+
 	ws = startSocket()
 
 }
@@ -57,15 +62,19 @@ players = []
 
 
 function create_player(id) {
-	let player = new Actor({img: "img/Red-Ball-Transparent.png", x: 0, y: 0, wUnits: 7});
+	
+	let temp = hsvToHex(color)
+	let color2 = parseInt(temp.slice(1), 16)
+	let player = new Circle({r: 3.5, x: 0, y: 0, color:color2});
 	player.vx = 0
 	player.vy = 0
 	player.ax = 0
 	player.ay = 0
 	player.boost = 0
 	player.id = id
+	player.colorhsv = [color[0], color[1], color[2]]
+	console.log('playercolor is', color)
 	players.push(player)
-	player.color = color
 	changecolor()
 	
 	return player
@@ -75,6 +84,7 @@ function checkifoffmap() {
 	for (let p of players) {
 		if (p.x**2 + p.y**2 > (circlesize/25*26)**2) {
 			p.x = -420000
+			ws.sendToUser(p.id, 'GameOver')
 			players = players.filter(function(name) {return name !== p.id})
 		}
 	}
@@ -162,7 +172,7 @@ function userchange(data) {
 		player = findPlayerById(i)
 		if (!player){
 			player = create_player(i)
-			msg = ['color', player.color[0], player.color[1], player.color[2]]
+			msg = ['color', player.colorhsv[0], player.colorhsv[1], player.colorhsv[2]]
 			ws.sendToUser(msg, i)
 		}
 		
