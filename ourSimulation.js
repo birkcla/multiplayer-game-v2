@@ -1,5 +1,5 @@
 
-
+circle2size = 70
 circlesize = 60
 color = [(Math.floor(Math.random() * 12)*30), ((Math.floor(Math.random() * 3) * 20) + 60), ((Math.floor(Math.random() * 4) * 20) + 40)]
 console.log(color);
@@ -48,9 +48,13 @@ function buildWorld() {
 	//world.add(l)
 	
 	temp = hsvToHex([0, 0, 100])
+	temp2 = hsvToHex([255, 0, 0])
 	circlecolor = parseInt(temp.slice(1), 16)
 	//circle = new PassiveSprite({x: 0, y: 0, wUnits: 2*circlesize, color: circlecolor})
+	let color2 = parseInt(temp2.slice(1), 16)
+	spawncircle = new Circle({r: circle2size, x:0, y: 0, color: color2 })
 	worldcircle = new Circle({r: circlesize, x: 0, y: 0, color: circlecolor}) 
+	
 
 	ws = startSocket()
 
