@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>Game Server</title>
+    <title>Multiplayer-Game-v2-Server</title>
     <script src="js/pixi.js"></script>
     <script src="js/pixi-helpers.js"></script>
     <script src="js/simHelpers.js"></script>
@@ -15,10 +15,27 @@
 		body, html {margin: 0; padding:0; background-color: black; overflow:hidden;}
     .layout {display: flex;}
 
+    #startscreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: black;
+      z-index: 100;
+      opacity: 1;
+      display: block;
+    }
+
+
+
+
     </style>
   </head>
 <body>
   <div class="layout">
+    <div id="startscreen"></div>
+    
     <div class="game"></div>
     <div><img src="img/qrcodemicha.png"></div>
   </div>
