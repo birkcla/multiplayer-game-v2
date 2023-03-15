@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
   <head>
-    testcommit2
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
@@ -28,6 +27,20 @@
       display: block;
     }
 
+    #animatedtitle {
+      position: relative;
+      top: 50%;
+      color:red;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 500%;
+      text-align: center;
+      font-weight: bold;
+      transform: translateY(-50%);
+      
+    }
+
+    
+
 
 
 
@@ -35,7 +48,12 @@
   </head>
 <body>
   <div class="layout">
-    <div id="startscreen"></div>
+    <div id="startscreen">
+      <div id="animatedtitle">Multiplayer Game v2</div>
+      <div id="playerlist"></div>
+      <script src="startpage.js"></script>
+
+    </div>
     
     <div class="game"></div>
     <div><img src="img/qrcodemicha.png"></div>
