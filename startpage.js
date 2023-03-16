@@ -27,28 +27,30 @@ function stringconvert(text){
 }
 
 
-function caseflickerstep(id) {
-    let text = document.getElementById(id).textContent;
+function caseflickerstep(element) {
+    let text = element.textContent;
     newtext = stringconvert(text)
-    document.getElementById(id).innerHTML = newtext;
+    element.innerHTML = newtext;
     //console.log("flickerstep")
 }
 
 
-function buildstep(id, text){
+function buildstep(element, text){
     //console.log("buildstep")
-    let otext = document.getElementById(id).textContent;
+    let otext = element.textContent;
 
     if (otext.length < text.length){
         otext += text.charAt(otext.length)
-        document.getElementById(id).innerHTML = otext;
+        element.innerHTML = otext;
     }
 }
 
 function translationstep(id){
     translationstepcount += 1
     //stepsize = translationamount * animationspeed(translationstepcount / translationlength)
-    console.log(document.getElementById(id))
+    //console.log(document.getElementById(id))
+    ypos += 0.1
+    element.style.top = ypos+"%"
     
 
 }
@@ -65,14 +67,14 @@ async function animationstep(){
 
     //do buildstep
     if (timestep > 0 && timestep <= buildlength) {
-        buildstep(elementid, buildtext)
+        buildstep(element, buildtext)
     }
 
     //do flickerstep
-    caseflickerstep(elementid)
+    caseflickerstep(element)
 
     //do translationstep
-    translationstep(elementid)
+    translationstep(element)
 
 }
 
@@ -95,11 +97,18 @@ async function animationstep(){
 
 //script ----------------------------------------------
 
+//what element to animate:
 elementid = "animatedtitle"
+element = document.getElementById(elementid)
+console.log("element is :"+element)
+//what timestep to start:
 timestep = -5
 
+//trtanslation animation length:
 translationlength = 100
+//position before translation
 translationstartpos = 50
+//position after translation
 translationendpos = 30
 
 function animationspeed(x){
@@ -112,15 +121,16 @@ return x
 
 
 //initialize
-buildtext = document.getElementById(elementid).textContent
+buildtext = element.textContent
 buildlength = buildtext.length
 console.log("buildlength is", buildlength)
-document.getElementById(elementid).innerHTML = ""
+element.innerHTML = ""
 
 translationstepcount = 0
 translationamount = translationendpos - translationstartpos
 
 
+ypos = translationstartpos
 //start animationloop
 animationloop_startscreen = setInterval(animationstep, 100)
 
