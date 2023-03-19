@@ -319,7 +319,7 @@ class RoundedRectangle {
     
   }
 
-  checkifcollided(px,py, sizereference){
+  checkifcollided(px,py, pr, sizereference){
     let collided = "false"
 
     let r = (this.radius / 100 * sizereference)
@@ -328,14 +328,30 @@ class RoundedRectangle {
     let x = this.x
     let y = this.y
 
-    console.log(sizereference)
-    if (x < px && (x + w) > px && (y - h + r) < py && (y + r) > py) {
+    //console.log(sizereference)
+    if (x < (px + pr) && (x + w) > (px - pr) && (y - h + r) < py && (y - r) > py) {
       collided = "true"
     }
 
-    if ((x + r) < px && (x + w - r) > px && (y - h) < py && y > py) {
+    if ((x + r) < px && (x + w - r) > px && (y - h) < (py + pr) && y > (py - pr)) {
       collided = "true"
     }
+
+    let cornerpoints = [
+      [x+r, y-r],
+      [x+w-r, y-r],
+      [x+w-r, y-h+r],
+      [x+r, y-h+r]
+    ]
+
+    for (let c = 0; c < 4; c++) {
+      let pos = cornerpoints[c]
+      let dist = ((pos[0] - px)**2 + (pos[1] - py)**2)**0.5
+      if (dist <= (r + pr)) {
+        collided = "true"
+      }
+    }
+    
     return collided
   }
 }

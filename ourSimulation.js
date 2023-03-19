@@ -105,7 +105,7 @@ function create_player(id) {
 	
 	let temp = hsvToHex(color)
 	let color2 = parseInt(temp.slice(1), 16)
-	let player = new Circle({r: 3.5, x: 0, y: 0, color:color2});
+	let player = new Circle({r: 20, x: 0, y: 0, color:color2});
 	player.vx = 0
 	player.vy = 0
 	player.ax = 0
@@ -122,7 +122,7 @@ function create_player(id) {
 
 function checkifoffmap() {
 	for (let p of players) {
-		let collided = plattform.checkifcollided(p.x, p.y, sizereference)
+		let collided = plattform.checkifcollided(p.x, p.y, p.r, sizereference)
 		//console.log(p.x, p.y, collided)
 		if (collided == "true") {
 			plattform.color = 0xcc0000
