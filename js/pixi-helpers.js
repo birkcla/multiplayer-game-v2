@@ -12,7 +12,7 @@ function World(params) {
   this.wPx = params.wPx || window.innerWidth;
   this.hPx = params.hPx || window.innerHeight;
   this.bgColor = params.bgColor || 0x000000;
-  this.fontColor = params.fontColor || "#ffffff";
+  this.fontColor = params.fontColor || "ffffff";
   
   this.renderer = new PIXI.autoDetectRenderer(this.wPx, this.hPx);
   document.querySelector(".game").appendChild(this.renderer.view);  
@@ -205,6 +205,8 @@ class Circle {
 
   }
 
+  
+
 
   destroy() {
     this.world.stage.removeChild(this.graphicscircle);
@@ -213,6 +215,254 @@ class Circle {
     this.graphic.position = this.world.unitsToPx(this);
   }
 }
+
+
+
+
+
+class Rectangle {
+  constructor(params) {
+    var params = params || {};
+    let sizereference = params.sizereference || 100
+    this.world = params.world || world;
+    this.x = params.x || 0;
+    this.y = params.y || 0;
+    this.width = params.width || 100;
+    this.height = params.height || 100;
+    this.color = params.color || 0xaa0000;
+    this.alpha = params.alpha || 1;
+    this.r = params.r || 1;
+    this.graphic = new PIXI.Graphics();
+    this.graphic.beginFill(this.color);
+    this.graphic.drawRect(0, 0, (this.width / 100 * sizereference), (this.height / 100 * sizereference));
+    this.graphic.endFill();
+    this.draw()
+    this.world.actors.push(this)
+    this.world.stage.addChild(this.graphic);
+    this.world.renderer.render(world.stage);
+
+  }
+
+  
+  destroy() {
+    this.world.stage.removeChild(this.graphicscircle);
+  }
+  draw() {
+    this.graphic.position = this.world.unitsToPx(this);
+  }
+
+  updateshape(sizereference) {
+    this.graphic.clear()
+    this.graphic.beginFill(this.color);
+    this.graphic.drawRect(0, 0, (this.width / 100 * sizereference), (this.height / 100 * sizereference));
+    this.graphic.endFill();
+  }
+}
+
+
+
+
+
+class RoundedRectangle {
+  constructor(params) {
+    var params = params || {};
+    let sizereference = params.sizereference || 100
+    let drawoncreation = params.drawoncreation || "true"
+    this.world = params.world || world;
+    this.x = params.x || 0;
+    this.y = params.y || 0;
+    this.width = params.width || 100;
+    this.height = params.height || 100;
+    this.radius = params.radius || 10
+    this.color = params.color || 0xaa0000;
+    this.alpha = params.alpha || 1;
+    this.r = params.r || 1;
+    this.graphic = new PIXI.Graphics();
+    if (drawoncreation !== "false") {
+      this.updateshape(sizereference)
+    }
+    this.draw()
+    this.world.actors.push(this)
+    this.world.stage.addChild(this.graphic);
+    this.world.renderer.render(world.stage);
+
+  }
+
+  
+  destroy() {
+    this.world.stage.removeChild(this.graphicscircle);
+  }
+  draw() {
+    this.graphic.position = this.world.unitsToPx(this);
+  }
+
+  updateshape(sizereference) {
+
+    //this has to be called in order to render
+
+    this.graphic.clear()
+    this.graphic.beginFill(this.color);
+
+    let r = (this.radius / 100 * sizereference)
+    let w = this.width / 100 * sizereference
+    let h = this.height / 100 * sizereference
+
+    this.graphic.drawRect(r, 0, (w - (2 * r)), h)
+    this.graphic.drawRect(0, r, w, (h - (2 * r)))
+    this.graphic.drawCircle(r, r, r)
+    this.graphic.drawCircle((w - r), r, r)
+    this.graphic.drawCircle((w - r), (h - r), r)
+    this.graphic.drawCircle(r, (h - r), r)
+
+    this.graphic.endFill();
+
+    
+  }
+
+  checkifcollided(px,py, sizereference){
+    let collided = "false"
+
+    let r = (this.radius / 100 * sizereference)
+    let w = (this.width / 100 * sizereference)
+    let h = (this.height / 100 * sizereference)
+    let x = this.x
+    let y = this.y
+
+    console.log(sizereference)
+    if (x < px && (x + w) > px && (y - h + r) < py && (y + r) > py) {
+      collided = "true"
+    }
+
+    if ((x + r) < px && (x + w - r) > px && (y - h) < py && y > py) {
+      collided = "true"
+    }
+    return collided
+  }
+}
+
+
+//spawnpoint
+class spawnpoint {
+  constructor(params) {
+    var params = params || {};
+    let sizereference = params.sizereference || 100
+    let drawoncreation = params.drawoncreation || "true"
+    this.world = params.world || world;
+    this.x = params.x || 0;
+    this.y = params.y || 0;
+    this.width = params.width || 100;
+    this.height = params.height || 100;
+    this.radius = params.radius || 10
+    this.color = params.color || 0xaa0000;
+    this.alpha = params.alpha || 1;
+    this.r = params.r || 1;
+    this.graphic = new PIXI.Graphics();
+    if (drawoncreation !== "false") {
+      this.updateshape(sizereference)
+    }
+    this.draw()
+    this.world.actors.push(this)
+    this.world.stage.addChild(this.graphic);
+    this.world.renderer.render(world.stage);
+
+  }
+
+  
+  destroy() {
+    this.world.stage.removeChild(this.graphicscircle);
+  }
+  draw() {
+    this.graphic.position = this.world.unitsToPx(this);
+  }
+
+  updateshape(sizereference) {
+
+    //this has to be called in order to render
+
+    this.graphic.clear()
+    this.graphic.beginFill(this.color);
+
+    let r = (this.radius / 100 * sizereference)
+    let w = this.width / 100 * sizereference
+    let h = this.height / 100 * sizereference
+    this.graphic.drawRect(r, 0, (w - (2 * r)), h)
+    this.graphic.drawRect(0, r, w, (h - (2 * r)))
+    this.graphic.drawCircle(r, r, r)
+    this.graphic.drawCircle((w - r), r, r)
+    this.graphic.drawCircle((w - r), (h - r), r)
+    this.graphic.drawCircle(r, (h - r), r)
+
+    this.graphic.endFill();
+  }
+}
+
+//obstacle
+class obstacle {
+  constructor(params) {
+    var params = params || {};
+    let sizereference = params.sizereference || 100
+    let drawoncreation = params.drawoncreation || "false"
+    this.world = params.world || world;
+    this.x = params.x || 0;
+    this.y = params.y || 0;
+    this.width = params.width || 100;
+    this.height = params.height || 100;
+    this.radius = params.radius || 10
+    this.color = params.color || 0xaa0000;
+    this.alpha = params.alpha || 1;
+    this.r = params.r || 1;
+    this.graphic = new PIXI.Graphics();
+    if (drawoncreation !== "false") {
+      this.updateshape(sizereference)
+    }
+    this.draw()
+    this.world.actors.push(this)
+    this.world.stage.addChild(this.graphic);
+    this.world.renderer.render(world.stage);
+
+  }
+
+  
+  destroy() {
+    this.world.stage.removeChild(this.graphicscircle);
+  }
+  draw() {
+    this.graphic.position = this.world.unitsToPx(this);
+  }
+
+  updateshape(sizereference, zeropos) {
+
+    //this has to be called in order to render
+
+    //recalculating position taking the sizereference into account:
+    
+    
+
+    let newx = (sizereference / 300 * this.x) + (zeropos[0]) 
+    let newy = (sizereference / 300 * this.y) + (zeropos[1])
+    this.x = newx
+    this.y = newy
+
+    this.graphic.clear()
+    this.graphic.beginFill(this.color);
+
+    let r = (this.radius / 100 * sizereference)
+    let w = this.width / 100 * sizereference
+    let h = this.height / 100 * sizereference
+    this.graphic.drawRect(r, 0, (w - (2 * r)), h)
+    this.graphic.drawRect(0, r, w, (h - (2 * r)))
+    this.graphic.drawCircle(r, r, r)
+    this.graphic.drawCircle((w - r), r, r)
+    this.graphic.drawCircle((w - r), (h - r), r)
+    this.graphic.drawCircle(r, (h - r), r)
+
+    this.graphic.endFill();
+  }
+}
+
+
+
+
 
 function PassiveSprite(params) {
   var params = params || {};

@@ -10,12 +10,11 @@ async function beforeStart() {
   for(let s of fetchScripts) {
     allscripts += await fetch(s.getAttribute("src")).then(r=>r.text())
   }
+  
   var imgpaths = [...allscripts.matchAll(/img:\s?"(.*)"/g)].map(function(el) {return el[1];});
   preloadImages(imgpaths, function() {
-    buildWorld();
-    setup();
-    loopStart();
-  }) 
+    console.log("images preloaded")
+  })
 }
 
 function loopStart() {

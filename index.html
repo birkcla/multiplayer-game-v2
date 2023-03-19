@@ -15,6 +15,14 @@
 		body, html {margin: 0; padding:0; background-color: black; overflow:hidden;}
     .layout {display: flex;}
 
+
+    .game {
+      display: none;
+      width: 100%;
+      height: 100%;
+    }
+
+
     #startscreen {
       position: fixed;
       top: 0;
@@ -29,34 +37,122 @@
 
     #animatedtitle {
       position: relative;
-      top: 50%;
-      color:red;
+      top: 25%;
+      left: 50%;
+      max-width: 80%;
+      
+      color:white;
       font-family: 'Courier New', Courier, monospace;
       font-size: 500%;
       text-align: center;
       font-weight: bold;
+      transform: translate(-50%, -50%);
+      background-color:rgb(40, 40, 40);
+      border-radius: 20px;
+      z-index: 102;
+
+    }
+
+
+    #startmenubox {
+      background-color:rgb(40, 40, 40);
+      border-radius: 20px;
+      position: absolute;
+      width: 80%;
+      height: 40%;
+      z-index: 101;
+
+      top: 60%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+
+      opacity: 1;
+
+    }
+
+    #qrcodebox {
+      background-color:rgb(25, 25, 25);
+      border-radius: 20px;
+      position: absolute;
+      height: 90%;
+      width: 30%;
+      z-index: 103;
+
+      top: 50%;
+      left: 3%;
       transform: translateY(-50%);
+
+      align-items:center;
+      display: flex;
+      text-align: center;
       
+    }
+
+    .qrcode {
+      margin: auto;
+      max-height: 85%;
+      max-width: 85%;
+      border-radius: 10px;
+      
+    }
+    
+    .startbutton {
+      position: absolute;
+      width: 55%;
+      margin-left: auto;
+      margin-right: auto;
+      height: 20%;
+      bottom: 5%;
+      right: 3%;
+      border-radius: 20px;
+      border-style:solid;
+      background-color: rgb(25, 25, 25);
+
+      color: white;
+      font-weight: 500;
+      font-size: 300%;
+      z-index: 105;
     }
 
     
 
 
-
-
     </style>
+    <script>
+      var gamerunning = false
+    </script>
   </head>
 <body>
   <div class="layout">
+
     <div id="startscreen">
+
       <div id="animatedtitle">Multiplayer Game v2</div>
-      <div id="playerlist"></div>
+
+      <div id="startmenubox">
+        <div id="qrcodebox">
+          <img class="qrcode" src="img/qrcodemicha.png">
+        </div>
+        
+        <button class="startbutton">Start Game</button>
+        <script>
+            startbutton = document.querySelector(".startbutton")
+            startbutton.addEventListener('click', ()=>{
+              console.log("starting Game ....")
+              startgame()
+
+          })
+        </script>
+        
+      </div>
+      
+      
       <script src="startpage.js"></script>
 
     </div>
     
     <div class="game"></div>
-    <div><img src="img/qrcodemicha.png"></div>
+    
   </div>
   <script src="ourSimulation.js"></script>
   <script>if(beforeStart) beforeStart();</script>

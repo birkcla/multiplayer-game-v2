@@ -4,8 +4,44 @@ circlesize = 60
 color = [(Math.floor(Math.random() * 12)*30), ((Math.floor(Math.random() * 3) * 20) + 60), ((Math.floor(Math.random() * 4) * 20) + 40)]
 console.log(color);
 
+let ws = startSocket()
+let sizereference
 
-let ws;
+const spawnpointpos = [
+	{n: 1, x: 0, y: 0},
+	{n: 2, x: 0, y: 0},
+	{n: 3, x: 0, y: 0},
+	{n: 4, x: 0, y: 0},
+
+	{n: 5, x: 0, y: 0},
+	{n: 6, x: 0, y: 0},
+	{n: 7, x: 0, y: 0},
+	{n: 8, x: 0, y: 0},
+
+	{n: 9, x: 0, y: 0},
+	{n: 10, x: 0, y: 0},
+	{n: 11, x: 0, y: 0},
+	{n: 12, x: 0, y: 0},
+
+	{n: 13, x: 0, y: 0},
+	{n: 14, x: 0, y: 0},
+	{n: 15, x: 0, y: 0},
+	{n: 16, x: 0, y: 0},
+	
+]
+
+
+// obstacles have to be updated after creating in order to pass them the sizereference which is defined later in the script
+//the x & y position is where their left upper corner should be on the game map which has the aspect ration of 2/3.
+//the max coordinates are x = 300 & y = 200
+obstacle_data = [
+	{id: 0001, x: 0, y: 200, width: 4, height: 10, radius: 1, color: 0x804d4d}
+]
+
+
+
+var spawnpoints = []
+var obstacles = []
 
 async function startSocket() {
 	sessionStorage.user = sessionStorage.user || `Host`;
@@ -36,11 +72,14 @@ function changecolor(){
 function buildWorld() {
 	
 	world = new World({
-		hUnits: 150,
-		wPx: window.innerHeight,
-		coords: {step: 10},
-		unit: "m",
-		minUnits: {x: -85, y: -75},
+		hUnits: window.innerHeight,
+		wUnits: window.innerWidth,
+		hPx: window.innerHeight,
+		wpx: window.innerWidth,
+		bgColor: "0x000000",
+		coords: {step: 100},
+		unit: "px",
+		minUnits: {x: 0, y: 0},
 		fontColor: "#ffffff"
 	});
 
@@ -49,14 +88,12 @@ function buildWorld() {
 	
 	temp = hsvToHex([0, 0, 100])
 	temp2 = hsvToHex([255, 0, 0])
-	circlecolor = parseInt(temp.slice(1), 16)
+/* 	circlecolor = parseInt(temp.slice(1), 16)
 	//circle = new PassiveSprite({x: 0, y: 0, wUnits: 2*circlesize, color: circlecolor})
 	let color2 = parseInt(temp2.slice(1), 16)
-	spawncircle = new Circle({r: circle2size, x:0, y: 0, color: color2 })
-	worldcircle = new Circle({r: circlesize, x: 0, y: 0, color: circlecolor}) 
-	
 
-	ws = startSocket()
+	
+ */
 
 }
 
@@ -85,9 +122,14 @@ function create_player(id) {
 
 function checkifoffmap() {
 	for (let p of players) {
-		if (p.x**2 + p.y**2 > (circlesize/25*26)**2) {
-			killplayer(p)
+		let collided = plattform.checkifcollided(p.x, p.y, sizereference)
+		//console.log(p.x, p.y, collided)
+		if (collided == "true") {
+			plattform.color = 0xcc0000
+		}else{
+			plattform.color = 0x00cc00
 		}
+		plattform.updateshape(sizereference)
 	}
 }
 
@@ -106,19 +148,63 @@ function setup() {
 	dt = 0.016;       // Zeitschritt in Sekunden
 
 
-	testi1 = create_player("testi1")
+/* 	testi1 = create_player("testi1")
 	testi1.x = 10
 
 	testi2 = create_player("testi2")
 	testi2.x = 20
 	testi2.y = 16
 	testi2.vx = -50
-	testi2.vy = -80
+	testi2.vy = -80 */
+
+	//build scene
+	
 
 }
 
+function getreferences() {
+		if ((window.innerHeight / window.innerWidth) > 2/3){
+			console.log("zuhoch")
+			sizereference = window.innerWidth * 0.9
+		}else{
+			console.log("zubreit")
+			sizereference = window.innerHeight * 0.9 * 3/2
+			
+
+		}
+		console.log("sizereference is now :" + sizereference)
+
+}
+
+function buildmap() {
+	plattform = new RoundedRectangle({color: 0xffffff, sizereference: sizereference, drawoncreation: "false"}) 
+	//plattform = new Circle({r: 200, x: 0, y: 0, color: 0xffbb00})
+	
+	plattform.height = 200 / 3
+	plattform.width = 100
+	plattform.radius = 3
+	plattform.x = (window.innerWidth / 2) - (plattform.width / 200 * sizereference)
+	plattform.y = (window.innerHeight / 2) + (plattform.height / 200 * sizereference)
+
+	zeropos = [(window.innerWidth / 2) - (plattform.width / 200 * sizereference),
+	(window.innerHeight / 2) - (plattform.height / 200 * sizereference)]
+	console.log(zeropos)
 
 
+	plattform.updateshape(sizereference)
+
+	for (let i = 0; i < 16; i++) {
+		spawnpoints[i] = new spawnpoint({pos: spawnpointpos[i]})
+	}
+
+	for (let i = 0; i < obstacle_data.length; i++) {
+		obstacles[i] = new obstacle(obstacle_data[i])
+		obst = obstacles[i]
+		obst.draw()
+		obst.updateshape(sizereference, zeropos)
+	}
+
+}
 //window.addEventListener("keydown", taste);
 
 /* function taste(event) {
@@ -253,9 +339,4 @@ function collide(p1, p2) {
 	
 
 }
-
-
-
-
-
 
