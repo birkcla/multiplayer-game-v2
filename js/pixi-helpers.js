@@ -269,8 +269,11 @@ class RoundedRectangle {
     let sizereference = params.sizereference || 100
     let drawoncreation = params.drawoncreation || "true"
     this.world = params.world || world;
+    this.csyst = params.csyst || "absolut"
     this.x = params.x || 0;
     this.y = params.y || 0;
+    this.xg = params.xg || 0;
+    this.yg = params.yg || 0;
     this.width = params.width || 100;
     this.height = params.height || 100;
     this.radius = params.radius || 10
@@ -293,6 +296,13 @@ class RoundedRectangle {
     this.world.stage.removeChild(this.graphicscircle);
   }
   draw() {
+
+    if (this.csyst == "game"){
+      let newx = (sizereference / 300 * this.xg) + (zeropos[0]) 
+      let newy = (sizereference / 300 * this.yg) + (zeropos[1])
+      this.x = newx
+      this.y = newy
+    }
     this.graphic.position = this.world.unitsToPx(this);
   }
 
@@ -320,6 +330,7 @@ class RoundedRectangle {
   }
 
   checkifcollided(px,py, pr, sizereference){
+    
     let collided = "false"
 
     let r = (this.radius / 100 * sizereference)
@@ -328,31 +339,86 @@ class RoundedRectangle {
     let x = this.x
     let y = this.y
 
-    //console.log(sizereference)
-    if (x < (px + pr) && (x + w) > (px - pr) && (y - h + r) < py && (y - r) > py) {
+    let distr = 0
+    let lot = [0,0]
+
+    //console.log("spielerradius ist :"+pr)
+
+    let diso = (py - pr) - (y - r)
+    let disr = (px - pr) - (x + w)
+    let disu = (y - h + r) - (py + pr)
+    let disl = x - (px + pr)
+    
+    //console.log(diso)
+    //console.log(disr)
+    //console.log(disu)
+    //console.log(disl)
+
+    //solving for main area: 
+
+    //x axis rect
+
+    if (diso < 0 && disr < 0 && disu < 0 && disl < 0) {
       collided = "true"
+      
+      if (disr >= disu && disr >= disl && disr >= diso){
+        distr = disr
+        lot = [1, 0]
+      }
+      
+      if (disl >= diso && disl >= disr && disl >= disu){
+        distr = disl
+        lot = [-1, 0]
+      }
     }
 
-    if ((x + r) < px && (x + w - r) > px && (y - h) < (py + pr) && y > (py - pr)) {
+
+ //y axis rect
+    diso = (py - pr) - (y)
+    disr = (px - pr) - (x + w - r)
+    disu = (y - h) - (py + pr)
+    disl = (x + r) - (px + pr)
+
+    if (diso < 0 && disr < 0 && disu < 0 && disl < 0) {
       collided = "true"
+      if (diso >= disr && diso >= disu && diso >= disl){
+        distr = diso
+        lot = [0, 1]
+      }
+      
+      if (disu >= disl && disu >= diso && disu >= disr){
+        distr = disu
+        lot = [0, -1]
+      }
+    
     }
 
-    let cornerpoints = [
-      [x+r, y-r],
-      [x+w-r, y-r],
-      [x+w-r, y-h+r],
-      [x+r, y-h+r]
-    ]
 
-    for (let c = 0; c < 4; c++) {
-      let pos = cornerpoints[c]
-      let dist = ((pos[0] - px)**2 + (pos[1] - py)**2)**0.5
-      if (dist <= (r + pr)) {
-        collided = "true"
+
+    //solving corner collisions:
+    if (collided == "false"){
+      let cornerpoints = [
+        [x+r, y-r],
+        [x+w-r, y-r],
+        [x+w-r, y-h+r],
+        [x+r, y-h+r]
+      ]
+
+      for (let c = 0; c < 4; c++) {
+        let pos = cornerpoints[c]
+        let dist = ((pos[0] - px)**2 + (pos[1] - py)**2)**0.5
+        distr= dist - (r + pr)
+        if (distr <= 0) {
+          collided = "true"
+          let dx = px - pos[0]
+          let dy = py - pos[1]
+          let betrag = ((dx**2 + dy**2)**0.5)
+          lot = [(dx / betrag), (dy / betrag)]
+        }
       }
     }
     
-    return collided
+    return([collided, distr, lot])
   }
 }
 
@@ -366,6 +432,7 @@ class spawnpoint {
     this.world = params.world || world;
     this.x = params.x || 0;
     this.y = params.y || 0;
+    
     this.width = params.width || 100;
     this.height = params.height || 100;
     this.radius = params.radius || 10
@@ -412,69 +479,6 @@ class spawnpoint {
   }
 }
 
-//obstacle
-class obstacle {
-  constructor(params) {
-    var params = params || {};
-    let sizereference = params.sizereference || 100
-    let drawoncreation = params.drawoncreation || "false"
-    this.world = params.world || world;
-    this.x = params.x || 0;
-    this.y = params.y || 0;
-    this.width = params.width || 100;
-    this.height = params.height || 100;
-    this.radius = params.radius || 10
-    this.color = params.color || 0xaa0000;
-    this.alpha = params.alpha || 1;
-    this.r = params.r || 1;
-    this.graphic = new PIXI.Graphics();
-    if (drawoncreation !== "false") {
-      this.updateshape(sizereference)
-    }
-    this.draw()
-    this.world.actors.push(this)
-    this.world.stage.addChild(this.graphic);
-    this.world.renderer.render(world.stage);
-
-  }
-
-  
-  destroy() {
-    this.world.stage.removeChild(this.graphicscircle);
-  }
-  draw() {
-    this.graphic.position = this.world.unitsToPx(this);
-  }
-
-  updateshape(sizereference, zeropos) {
-
-    //this has to be called in order to render
-
-    //recalculating position taking the sizereference into account:
-    
-    
-
-    let newx = (sizereference / 300 * this.x) + (zeropos[0]) 
-    let newy = (sizereference / 300 * this.y) + (zeropos[1])
-    this.x = newx
-    this.y = newy
-
-    this.graphic.clear()
-    this.graphic.beginFill(this.color);
-
-    let r = (this.radius / 100 * sizereference)
-    let w = this.width / 100 * sizereference
-    let h = this.height / 100 * sizereference
-    this.graphic.drawRect(r, 0, (w - (2 * r)), h)
-    this.graphic.drawRect(0, r, w, (h - (2 * r)))
-    this.graphic.drawCircle(r, r, r)
-    this.graphic.drawCircle((w - r), r, r)
-    this.graphic.drawCircle((w - r), (h - r), r)
-    this.graphic.drawCircle(r, (h - r), r)
-
-    this.graphic.endFill();
-  }
-}
 
 
 

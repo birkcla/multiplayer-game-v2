@@ -7,6 +7,19 @@ console.log(color);
 let ws = startSocket()
 let sizereference
 
+
+function equal(v1, v2) {
+	let delta = [(v2[0] - v1[0]), (v2[1] - v1[1])]
+	let dist = (delta[0]**2 + delta[1]**2)**0.5
+	if (dist < 0.0001) {
+		return true
+	}else{
+		return false
+	}
+
+}
+
+
 const spawnpointpos = [
 	{n: 1, x: 0, y: 0},
 	{n: 2, x: 0, y: 0},
@@ -35,18 +48,21 @@ const spawnpointpos = [
 //the x & y position is where their left upper corner should be on the game map which has the aspect ration of 2/3.
 //the max coordinates are x = 300 & y = 200
 obstacle_data = [
-	{id: 0001, x: 0, y: 200, width: 4, height: 10, radius: 1, color: 0x804d4d}
+	{id: 0001, xg: 60, yg: 180, width: 4, height: 10, radius: 1, color: 0x804d4d, csyst: "game"},
+	{id: 0001, xg: 120, yg: 120, width: 4, height: 10, radius: 1, color: 0x804d4d, csyst: "game"},
+	{id: 0001, xg: 180, yg: 60, width: 4, height: 10, radius: 1, color: 0x804d4d, csyst: "game"}
 ]
 
 
 
 var spawnpoints = []
 var obstacles = []
+var zeropos = []
 
 async function startSocket() {
 	sessionStorage.user = sessionStorage.user || `Host`;
 	ws = await WS.connect('kugelspiel6', sessionStorage.user);
-	console.log(`${ws.username} connected!`, ws);
+	//console.log(`${ws.username} connected!`, ws);
 	ws.onMessage(message);
 	ws.onUserStatus(userchange);
 }	
@@ -122,7 +138,7 @@ function create_player(id) {
 
 function checkifoffmap() {
 	for (let p of players) {
-		let collided = plattform.checkifcollided(p.x, p.y, p.r, sizereference)
+		let collided = (plattform.checkifcollided(p.x, p.y, p.r, sizereference))[0]
 		//console.log(p.x, p.y, collided)
 		if (collided == "true") {
 			plattform.color = 0xcc0000
@@ -198,7 +214,7 @@ function buildmap() {
 	}
 
 	for (let i = 0; i < obstacle_data.length; i++) {
-		obstacles[i] = new obstacle(obstacle_data[i])
+		obstacles[i] = new RoundedRectangle(obstacle_data[i])
 		obst = obstacles[i]
 		obst.draw()
 		obst.updateshape(sizereference, zeropos)
@@ -242,7 +258,7 @@ function loop() {
 
 function message(msg) {
 	input = msg
-	console.log(input)
+	//console.log(input)
 	
 	player = findPlayerById(input.from)
 	player.ax = input.data[0]
@@ -277,23 +293,103 @@ function userchange(data) {
 }
 
 function checkcollision(radius){
+	//check for barrier collisions
+
+
+
+
 	count = 0
 	for (let p of players){
 		count += 1
+		
+		
+		//check for obstacle collisions
+		for (let obstacle of obstacles) {
+			//console.log(obstacle)
+			let [collided, distance, lot] = obstacle.checkifcollided(p.x, p.y, p.r, sizereference)
+			if (collided == "true") {
+				console.log(distance+"/"+lot)
+				
+
+
+		 		//player velocity markdown
+				let v1 = [p.vx, p.vy]
+				//normalize => betrag = 1
+				let betrag = (v1[0]**2 + v1[1]**2)**0.5
+				let v1n = [(v1[0] / betrag), (v1[1] / betrag)]
+			/*	
+				//get temppos
+				let pos = [p.x, p.y]
+				let tomove = [(lot[0] * (distance * -1)), (lot[1] * (distance * -1))]
+				let temppos = [(pos[0] + (v1n[0] * -1 * distance)), (pos[1] + (v1n[1] * -1 * distance))]
+				console.log(("pos: "+pos+"------"+"temppos"+temppos))
+				
+				 */
+				
+				p1 = [(p.x - (p.vx * dt)), (p.y - (p.vy * dt))]
+				p2 = [p.x, p.y]
+				let i = 0
+				while (!equal(p1, p2)) {
+					if(i++>100) break
+					//debugger
+					let deltapos = [(p2[0] - p1[0]), (p2[1] - p1[1])]
+					let postocheck = [(p1[0] + (deltapos[0]/ 2)), (p1[1] + (deltapos[1]/ 2))]
+					let [collided, distance, lot] = obstacle.checkifcollided(p.x, p.y, p.r, sizereference)
+					if (collided == "true") {
+						p2 = postocheck
+					}else{
+						p1 = postocheck
+					}
+				}
+
+				truedistance = ((p.x - p1[0])**2 + (p.x - p1[0])**2)**0.5
+
+				let temppos = p1
+
+				//mirror axis:
+
+				//anteil von v1 entlang des lots (normalachse) "wie viel vom lot"
+				let skalarprodukt = (v1n[0] * lot[0]) + (v1n[1] * lot[1])
+				let v1normal = [lot[0] * skalarprodukt, lot[1] * skalarprodukt]
+
+				//anteil von v1 entlang der tangente "wie viel vom tangent"
+				let v1tangent = [(v1n[0] - v1normal[0]), (v1n[1] - v1normal[1])]
+
+				//mirror v1tangent
+				let temp = v1normal
+				v1normal = [(temp[0] * -1), (temp[1] * -1)]
+
+				let vnewn = [v1tangent[0] + v1normal[0], [v1tangent[1] + v1normal[1]]]
+
+				//assign new position to player
+				let newpos = [(temppos[0] + (vnewn[0] * truedistance)), (temppos[1] + (vnewn[1] * truedistance))]
+				p.x = newpos[0]
+				p.y = newpos[1]
+				let vnew = [(vnewn[0] * betrag), (vnewn[1] * betrag)]
+				p.vx = vnew[0]
+				p.vy = vnew[1]
+				
+			}
+		}
+	
+		
+	
+	
+	
 		for (let p2 of players.slice(count)){
 			distancex = p.x - p2.x
 			distancey = p.y - p2.y
 			distance = (distancex**2 + distancey**2)**0.5
 
 			if (distance <= radius) {
-				collide(p, p2)
+				collidep(p, p2)
 			}
 
 		}
 	}
 }
 
-function collide(p1, p2) {
+function collidep(p1, p2) {
 	nvrawx = p1.x - p2.x
 	nvrawy = p1.y - p2.y
 	betrag = (nvrawx**2 + nvrawy**2)**0.5
