@@ -7,6 +7,9 @@ console.log(color);
 let ws = startSocket()
 let sizereference
 
+buildWorld();
+
+
 
 function equal(v1, v2) {
 	let delta = [(v2[0] - v1[0]), (v2[1] - v1[1])]
@@ -278,12 +281,13 @@ function findPlayerById(id) {
 
 
 function userchange(data) {
-	console.log(data);
+	console.log("user just changed"+data);
 	for (let i of data.slice(1)){
 		player = findPlayerById(i)
 		if (!player){
 			player = create_player(i)
 			msg = ['color', player.colorhsv[0], player.colorhsv[1], player.colorhsv[2]]
+			console.log("now would be the time to send"+msg+"----"+i)
 			ws.sendToUser(msg, i)
 		}
 		

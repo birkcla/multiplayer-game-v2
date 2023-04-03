@@ -29,7 +29,18 @@
       
     }
 
-    #after-game-screen {
+    #loadingtext {
+      position: absolute;
+      color: aliceblue;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 200%;
+      font-weight: 800;
+      min-width: 35%;
+    }
+
+    #connectingscreen {
       position: fixed;
       top: 0;
       left: 0;
@@ -37,25 +48,45 @@
       height: 100%;
       background-color:black;
       opacity: 1;
-      z-index: 100;
-      display: none;
+      z-index: 102;
+      display: block;
       pointer-events: auto;
     }
 
-    .loadbutton {
-      position:fixed;
-      left:50%;
+    #connectingtext {
+      position: relative;
+      color: aliceblue;
       top: 50%;
-      transform: translateX(-50%);
-      height:20vmin;
-      width:90vmin;
-      background-color: antiquewhite;
-      opacity: 1;
-      z-index: 101;
-      font-size: 400%;
-      font-style:normal;
-      font-weight: bold;
+      text-align: center;
+      font-size: 200%;
+      font-weight: 800;
+    }
 
+    
+    #gameover {
+      display:none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color:black;
+      opacity: 1;
+      z-index: 105;
+      pointer-events: auto;
+    }
+
+    #winner {
+      display:none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color:black;
+      opacity: 1;
+      z-index: 108;
+      pointer-events: auto;
     }
 
     </style>
@@ -76,13 +107,39 @@
         <circle class="innerCircle" r = "10" cx="50" cy="50" fill="rgb(255,0,0)"></circle>
     </svg>
 
-    <div id="pre-game-screen">
-      <button class="loadbutton">Start Game</button>
+
+    <div id="connectingscreen">
+      <div id="connectingtext">Connecting...</div>
     </div>
 
-    <div id="after-game-screen">
-      <button class="loadbutton">Restart Game</button>
+
+    <div id="pre-game-screen">
+      <div id="loadingtext">Waiting for host to start Game</div>
+      <script>
+        element = document.getElementById("loadingtext")
+        let extra = ""
+        text = element.innerHTML
+        function step () {
+          extra = extra+"."
+          element.innerHTML = text+extra
+          if (extra.length > 4) {
+            extra = ""
+          }
+        }
+        setInterval(step, 300)
+      </script>
     </div>
+
+
+    <div id="gameover">
+
+    </div>
+
+
+    <div id="winner">
+      
+    </div>
+
     
 
     <!-- <div><button class="Boost">Boost V6</button></div> -->
@@ -93,11 +150,7 @@
         let ws
         
         
-        const loadbutton = document.querySelector('.loadbutton');
-          loadbutton.addEventListener('click', ()=>{
-            loadgame()
-            document.querySelector('#pre-game-screen').style.display = 'none';
-          })
+        
 
         // document.querySelector(".Boost").addEventListener("click", sendBoost)
 
@@ -109,8 +162,10 @@
           //ws.onUserStatus(showUsers);
         }
         
+        connect()
+        
         function loadgame() {
-          connect()
+          
           
 
           document.addEventListener("touchmove", (event)=>{
@@ -153,14 +208,23 @@
           console.log(msg)
           if (msg.data[0] == 'color') {
             msgd = msg.data
+            document.getElementById("connectingscreen").style.display = 'none';
             playercolor = [msgd[1], msgd[2], msgd[3]]
             console.log('setting color to:', playercolor)
             const colorhex = hsvToHex(playercolor)
             console.log(colorhex)
             document.body.style.backgroundColor = colorhex;
+            document.querySelector('#pre-game-screen').style.backgroundColor = colorhex;
           }
-          if (msg.data[0] == 'GameOver') {
-            documen.querySelector('#after-game-screen').style.display = block;
+          if (msg.data[0] == 'gameover') {
+            document.querySelector('#gameover').style.display = block;
+          }
+          if (msg.data[0] == 'winner') {
+            document.querySelector('#winner').style.display = block;
+          }
+
+          if (msg.data[0] == 'start') {
+            document.querySelector('#pre-game-screen').style.display = 'none';
           }
 
           

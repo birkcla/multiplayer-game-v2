@@ -69,7 +69,6 @@ function startgame(){
     triggertime = timems
 
     getreferences();
-    buildWorld();
     buildmap();
     setup();
     loopStart();
@@ -81,6 +80,7 @@ function startgame(){
         startscreen.style.display = "none"
         rungame()
     }
+
     
     
 }
@@ -99,6 +99,7 @@ function fadeout(element, start, dur) {
 function rungame(){
     gamerunning = true
     document.querySelector(".game").style.display = "block"
+    ws.sendToAll(['start'])
 }
 
 
@@ -170,7 +171,7 @@ for (let i = 0; i < 1000; i++){
 
 //script ----------------------------------------------
 
-animations = false
+const animations = true
 
 
 
