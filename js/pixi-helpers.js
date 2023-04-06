@@ -342,61 +342,23 @@ class RoundedRectangle {
     let distr = 0
     let lot = [0,0]
 
-    //console.log("spielerradius ist :"+pr)
-
-    let diso = (py - pr) - (y - r)
-    let disr = (px - pr) - (x + w)
-    let disu = (y - h + r) - (py + pr)
-    let disl = x - (px + pr)
-    
-    //console.log(diso)
-    //console.log(disr)
-    //console.log(disu)
-    //console.log(disl)
-
-    //solving for main area: 
-
     //x axis rect
-
-    if (diso < 0 && disr < 0 && disu < 0 && disl < 0) {
+    if (collisionCircleAndRectangle(px, py, pr, x, y-h+r, w, h-2*r)) {
       collided = "true"
-      
-      if (disr >= disu && disr >= disl && disr >= diso){
-        distr = disr
-        lot = [1, 0]
-      }
-      
-      if (disl >= diso && disl >= disr && disl >= disu){
-        distr = disl
-        lot = [-1, 0]
-      }
+      lot = px > x + 0.5 * w ? [1, 0] : [-1, 0]
     }
 
-
- //y axis rect
-    diso = (py - pr) - (y)
-    disr = (px - pr) - (x + w - r)
-    disu = (y - h) - (py + pr)
-    disl = (x + r) - (px + pr)
-
-    if (diso < 0 && disr < 0 && disu < 0 && disl < 0) {
+    //y axis rect
+    if (collisionCircleAndRectangle(px, py, pr, x+r, y-h, w-2*r, h)) {
       collided = "true"
-      if (diso >= disr && diso >= disu && diso >= disl){
-        distr = diso
-        lot = [0, 1]
-      }
-      
-      if (disu >= disl && disu >= diso && disu >= disr){
-        distr = disu
-        lot = [0, -1]
-      }
-    
+      lot = py > y + 0.5 * h ? [0, 1] : [0, -1]
     }
 
 
 
     //solving corner collisions:
     if (collided == "false"){
+
       let cornerpoints = [
         [x+r, y-r],
         [x+w-r, y-r],
@@ -417,10 +379,31 @@ class RoundedRectangle {
         }
       }
     }
-    
-    return([collided, distr, lot])
+    return [collided, "not needed?", lot]
   }
 }
+
+function collisionCircleAndRectangle(cx, cy, cr, xmin, ymin, w, h) {
+  let midX = xmin + 0.5 * w
+  let midY = ymin + 0.5 * h
+  let diagonal = (w**2 + h**2)**0.5
+  let midRectToMidCircle = ((midX - cx)**2 + (midY - cy)**2)**0.5
+  if(midRectToMidCircle > 0.5 * diagonal + cr) {
+    return false //Kollision nicht möglich, da zu weit auseinander
+  }
+
+  let nearX = clamp(cx, xmin, xmin + w)
+  let nearY = clamp(cy, ymin, ymin + h)
+
+  return (cx - nearX)**2 + (cy-nearY)**2 < cr**2
+}
+
+function clamp(val, minval, maxval) {
+  if(val < minval) return minval
+  if(val > maxval) return maxval
+  return val
+}
+  
 
 
 //spawnpoint

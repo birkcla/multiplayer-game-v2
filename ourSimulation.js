@@ -52,8 +52,8 @@ const spawnpointpos = [
 //the max coordinates are x = 300 & y = 200
 obstacle_data = [
 	{id: 0001, xg: 60, yg: 180, width: 4, height: 10, radius: 1, color: 0x804d4d, csyst: "game"},
-	{id: 0001, xg: 120, yg: 120, width: 4, height: 10, radius: 1, color: 0x804d4d, csyst: "game"},
-	{id: 0001, xg: 180, yg: 60, width: 4, height: 10, radius: 1, color: 0x804d4d, csyst: "game"}
+	{id: 0002, xg: 0, yg: 200, width: 100, height: 100, radius: 0.1, color: 0x804d4d, csyst: "game"},
+	{id: 0003, xg: 180, yg: 60, width: 4, height: 10, radius: 1, color: 0x804d4d, csyst: "game"}
 ]
 
 
@@ -199,7 +199,7 @@ function buildmap() {
 	plattform = new RoundedRectangle({color: 0xffffff, sizereference: sizereference, drawoncreation: "false"}) 
 	//plattform = new Circle({r: 200, x: 0, y: 0, color: 0xffbb00})
 	
-	plattform.height = 200 / 3
+	plattform.height = 200/3
 	plattform.width = 100
 	plattform.radius = 3
 	plattform.x = (window.innerWidth / 2) - (plattform.width / 200 * sizereference)
@@ -216,12 +216,12 @@ function buildmap() {
 		spawnpoints[i] = new spawnpoint({pos: spawnpointpos[i]})
 	}
 
-	for (let i = 0; i < obstacle_data.length; i++) {
+	/* for (let i = 0; i < obstacle_data.length; i++) {
 		obstacles[i] = new RoundedRectangle(obstacle_data[i])
 		obst = obstacles[i]
 		obst.draw()
 		obst.updateshape(sizereference, zeropos)
-	}
+	} */
 
 }
 //window.addEventListener("keydown", taste);

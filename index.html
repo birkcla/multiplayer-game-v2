@@ -10,7 +10,8 @@
     <script src="js/simHelpers.js"></script>
     <script src="WebsocketClient.js"></script>
     <script src="hsv-hex-convert.js"></script>
-    
+    <script>const animations = false</script>
+    <script>const skipstartscreen = true</script>
     <style>
 		body, html {margin: 0; padding:0; background-color: black; overflow:hidden;}
     .layout {display: flex;}
@@ -133,12 +134,17 @@
         
         <button class="startbutton">Start Game</button>
         <script>
-            startbutton = document.querySelector(".startbutton")
-            startbutton.addEventListener('click', ()=>{
-              console.log("starting Game ....")
-              startgame()
-
-          })
+            if (skipstartscreen == false) {
+              startbutton = document.querySelector(".startbutton")
+              startbutton.addEventListener('click', ()=>{
+                console.log("starting Game ....")
+                startgame()
+              })
+            }else{
+              setTimeout(() => {
+                startgame()
+              }, 100);
+            }
         </script>
       </div>
     
