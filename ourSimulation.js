@@ -51,9 +51,9 @@ const spawnpointpos = [
 //the x & y position is where their left upper corner should be on the game map which has the aspect ration of 2/3.
 //the max coordinates are x = 300 & y = 200
 obstacle_data = [
-	{id: 0001, xg: 60, yg: 180, width: 4, height: 10, radius: 1, color: 0x804d4d, csyst: "game"},
-	{id: 0002, xg: 0, yg: 200, width: 100, height: 100, radius: 0.1, color: 0x804d4d, csyst: "game"},
-	{id: 0003, xg: 180, yg: 60, width: 4, height: 10, radius: 1, color: 0x804d4d, csyst: "game"}
+	{id: 0001, xg: 40, yg: 100, width: 10, height: 90, radius: 3, color: 0x804d4d, csyst: "game"},
+	{id: 0002, xg: 70, yg: 100, width: 50, height: 10, radius: 3, color: 0x804d4d, csyst: "game"},
+	{id: 0003, xg: 40, yg: 50, width: 40, height: 10, radius: 3, color: 0x804d4d, csyst: "game"}
 ]
 
 
@@ -199,29 +199,36 @@ function buildmap() {
 	plattform = new RoundedRectangle({color: 0xffffff, sizereference: sizereference, drawoncreation: "false"}) 
 	//plattform = new Circle({r: 200, x: 0, y: 0, color: 0xffbb00})
 	
-	plattform.height = 200/3
-	plattform.width = 100
-	plattform.radius = 3
-	plattform.x = (window.innerWidth / 2) - (plattform.width / 200 * sizereference)
-	plattform.y = (window.innerHeight / 2) + (plattform.height / 200 * sizereference)
+	plattform.height = 200 * (sizereference / 300)
+	plattform.width = 300 * (sizereference / 300)
+	plattform.radius = 3 * (sizereference / 300)
+	plattform.x = (window.innerWidth / 2) - (plattform.width / 2)
+	plattform.y = (window.innerHeight / 2) + (plattform.height / 2)
 
-	zeropos = [(window.innerWidth / 2) - (plattform.width / 200 * sizereference),
-	(window.innerHeight / 2) - (plattform.height / 200 * sizereference)]
+	debugger
+	zeropos = [(window.innerWidth / 2) - (plattform.width / 2),
+	(window.innerHeight / 2) - (plattform.height / 2)]
 	console.log(zeropos)
 
 
-	plattform.updateshape(sizereference)
+	plattform.updateshape()
 
 	for (let i = 0; i < 16; i++) {
 		spawnpoints[i] = new spawnpoint({pos: spawnpointpos[i]})
 	}
 
-	/* for (let i = 0; i < obstacle_data.length; i++) {
+	for (let i = 0; i < obstacle_data.length; i++) {
 		obstacles[i] = new RoundedRectangle(obstacle_data[i])
 		obst = obstacles[i]
+		w = obst.width
+		h = obst.height
+		r = obst.radius
+		obst.width = w * (sizereference / 300)
+		obst.height = h * (sizereference / 300)
+		obst.radius= r * (sizereference / 300)
 		obst.draw()
-		obst.updateshape(sizereference, zeropos)
-	} */
+		obst.updateshape()
+	}
 
 }
 //window.addEventListener("keydown", taste);

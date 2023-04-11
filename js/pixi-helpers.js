@@ -296,7 +296,6 @@ class RoundedRectangle {
     this.world.stage.removeChild(this.graphicscircle);
   }
   draw() {
-
     if (this.csyst == "game"){
       let newx = (sizereference / 300 * this.xg) + (zeropos[0]) 
       let newy = (sizereference / 300 * this.yg) + (zeropos[1])
@@ -306,16 +305,16 @@ class RoundedRectangle {
     this.graphic.position = this.world.unitsToPx(this);
   }
 
-  updateshape(sizereference) {
+  updateshape() {
 
     //this has to be called in order to render
 
     this.graphic.clear()
     this.graphic.beginFill(this.color);
 
-    let r = (this.radius / 100 * sizereference)
-    let w = this.width / 100 * sizereference
-    let h = this.height / 100 * sizereference
+    let r = this.radius
+    let w = this.width
+    let h = this.height 
 
     this.graphic.drawRect(r, 0, (w - (2 * r)), h)
     this.graphic.drawRect(0, r, w, (h - (2 * r)))
@@ -333,9 +332,9 @@ class RoundedRectangle {
     
     let collided = "false"
 
-    let r = (this.radius / 100 * sizereference)
-    let w = (this.width / 100 * sizereference)
-    let h = (this.height / 100 * sizereference)
+    let r = this.radius
+    let w = this.width
+    let h = this.height
     let x = this.x
     let y = this.y
 
