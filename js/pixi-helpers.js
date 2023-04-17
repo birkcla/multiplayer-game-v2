@@ -18,6 +18,10 @@ function World(params) {
   document.querySelector(".game").appendChild(this.renderer.view);  
 
   this.stage = new PIXI.Stage(this.bgColor);
+
+  this.players = new PIXI.Stage();
+  
+ 
   
   if(params.img) {
     var bgTexture = new PIXI.Texture.fromImage(params.img)
@@ -67,7 +71,9 @@ function World(params) {
   return this;
 }
 
-World.prototype.render = function() {this.renderer.render(this.stage);};
+
+
+World.prototype.render = function() {this.renderer.render(this.stage); this.renderer.render(this.players);};
 World.prototype.add = function(obj) {this.actors.push(obj); this.stage.addChild(obj.sprite);};
 World.prototype.xToPx = function(xUnit) {return (xUnit - this.minUnits.x) * this.pxPerUnit;}
 World.prototype.yToPx = function(yUnit) {return this.hPx - (yUnit - this.minUnits.y) * this.pxPerUnit;}
@@ -201,6 +207,38 @@ class Circle {
     this.draw()
     this.world.actors.push(this)
     this.world.stage.addChild(this.graphic);
+    this.world.renderer.render(world.stage);
+
+  }
+
+  
+
+
+  destroy() {
+    this.world.stage.removeChild(this.graphicscircle);
+  }
+  draw() {
+    this.graphic.position = this.world.unitsToPx(this);
+  }
+}
+
+
+class PCircle {
+  constructor(params) {
+    var params = params || {};
+    this.world = params.world || world;
+    this.x = params.x || 0;
+    this.y = params.y || 0;
+    this.color = params.color || 0xaa0000;
+    this.alpha = params.alpha || 1;
+    this.r = params.r || 1;
+    this.graphic = new PIXI.Graphics();
+    this.graphic.beginFill(this.color);
+    this.graphic.drawCircle(0, 0, world.pxPerUnit * this.r);
+    this.graphic.endFill();
+    this.draw()
+    this.world.actors.push(this)
+    this.world.players.addChild(this.graphic);
     this.world.renderer.render(world.stage);
 
   }
@@ -414,11 +452,10 @@ class spawnpoint {
     this.world = params.world || world;
     this.x = params.x || 0;
     this.y = params.y || 0;
-    
-    this.width = params.width || 100;
-    this.height = params.height || 100;
+    this.position = params.position || [0, 0]
+    this.active = false
     this.radius = params.radius || 10
-    this.color = params.color || 0xaa0000;
+    this.color = params.color || 0xcccccc;
     this.alpha = params.alpha || 1;
     this.r = params.r || 1;
     this.graphic = new PIXI.Graphics();
@@ -437,26 +474,21 @@ class spawnpoint {
     this.world.stage.removeChild(this.graphicscircle);
   }
   draw() {
+    
+  
+    this.x = (this.position[0] * (sizereference / 300 ) + zeropos[0])
+    this.y = (this.position[1] * (sizereference / 300 ) + zeropos[1])
+  
     this.graphic.position = this.world.unitsToPx(this);
   }
 
-  updateshape(sizereference) {
+  updateshape() {
 
     //this has to be called in order to render
-
+    let r = this.radius
     this.graphic.clear()
     this.graphic.beginFill(this.color);
-
-    let r = (this.radius / 100 * sizereference)
-    let w = this.width / 100 * sizereference
-    let h = this.height / 100 * sizereference
-    this.graphic.drawRect(r, 0, (w - (2 * r)), h)
-    this.graphic.drawRect(0, r, w, (h - (2 * r)))
-    this.graphic.drawCircle(r, r, r)
-    this.graphic.drawCircle((w - r), r, r)
-    this.graphic.drawCircle((w - r), (h - r), r)
-    this.graphic.drawCircle(r, (h - r), r)
-
+    this.graphic.drawCircle(0, 0, r)
     this.graphic.endFill();
   }
 }

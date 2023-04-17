@@ -1,6 +1,7 @@
 
 circle2size = 70
 circlesize = 60
+const playerradius = 10
 color = [(Math.floor(Math.random() * 12)*30), ((Math.floor(Math.random() * 3) * 20) + 60), ((Math.floor(Math.random() * 4) * 20) + 40)]
 console.log(color);
 
@@ -24,25 +25,15 @@ function equal(v1, v2) {
 
 
 const spawnpointpos = [
-	{n: 1, x: 0, y: 0},
-	{n: 2, x: 0, y: 0},
-	{n: 3, x: 0, y: 0},
-	{n: 4, x: 0, y: 0},
+	{n: 1, x: 65, y: 70},
+	{n: 2, x: 25, y: 30},
+	{n: 3, x: 60, y: 180},
+	{n: 4, x: 180, y: 150},
 
-	{n: 5, x: 0, y: 0},
-	{n: 6, x: 0, y: 0},
-	{n: 7, x: 0, y: 0},
-	{n: 8, x: 0, y: 0},
-
-	{n: 9, x: 0, y: 0},
-	{n: 10, x: 0, y: 0},
-	{n: 11, x: 0, y: 0},
-	{n: 12, x: 0, y: 0},
-
-	{n: 13, x: 0, y: 0},
-	{n: 14, x: 0, y: 0},
-	{n: 15, x: 0, y: 0},
-	{n: 16, x: 0, y: 0},
+	{n: 5, x: 250, y: 30},
+	{n: 6, x: 260, y: 120},
+	{n: 7, x: 130, y: 140},
+	{n: 8, x: 125, y: 25},
 	
 ]
 
@@ -53,7 +44,13 @@ const spawnpointpos = [
 obstacle_data = [
 	{id: 0001, xg: 40, yg: 100, width: 10, height: 90, radius: 3, color: 0x804d4d, csyst: "game"},
 	{id: 0002, xg: 70, yg: 100, width: 50, height: 10, radius: 3, color: 0x804d4d, csyst: "game"},
-	{id: 0003, xg: 40, yg: 50, width: 40, height: 10, radius: 3, color: 0x804d4d, csyst: "game"}
+	{id: 0003, xg: 40, yg: 50, width: 40, height: 10, radius: 3, color: 0x804d4d, csyst: "game"},
+	{id: 0003, xg: 180, yg: 75, width: 80, height: 15, radius: 3, color: 0x804d4d, csyst: "game"},
+	{id: 0003, xg: 220, yg: 150, width: 10, height: 50, radius: 3, color: 0x804d4d, csyst: "game"},
+	{id: 0003, xg: 150, yg: 180, width: 10, height: 50, radius: 3, color: 0x804d4d, csyst: "game"},
+	{id: 0003, xg: 50, yg: 165, width: 110, height: 10, radius: 3, color: 0x804d4d, csyst: "game"},
+	{id: 0003, xg: 140, yg: 80, width: 10, height: 60, radius: 3, color: 0x804d4d, csyst: "game"}
+
 ]
 
 
@@ -124,7 +121,7 @@ function create_player(id) {
 	
 	let temp = hsvToHex(color)
 	let color2 = parseInt(temp.slice(1), 16)
-	let player = new Circle({r: 20, x: 0, y: 0, color:color2});
+	let player = new PCircle({r: 20, x: 0, y: 0, color:color2});
 	player.vx = 0
 	player.vy = 0
 	player.ax = 0
@@ -205,7 +202,6 @@ function buildmap() {
 	plattform.x = (window.innerWidth / 2) - (plattform.width / 2)
 	plattform.y = (window.innerHeight / 2) + (plattform.height / 2)
 
-	debugger
 	zeropos = [(window.innerWidth / 2) - (plattform.width / 2),
 	(window.innerHeight / 2) - (plattform.height / 2)]
 	console.log(zeropos)
@@ -213,10 +209,22 @@ function buildmap() {
 
 	plattform.updateshape()
 
-	for (let i = 0; i < 16; i++) {
-		spawnpoints[i] = new spawnpoint({pos: spawnpointpos[i]})
+
+	//load and create spawnpoints
+	
+	for (let i = 0; i < spawnpointpos.length; i++) {
+		pos = [spawnpointpos[i].x, spawnpointpos[i].y]
+		cpoint = new spawnpoint({position: pos})
+		spawnpoints[i] = cpoint
+		cpoint.radius = playerradius * 2
+		cpoint.active = true
+		cpoint.updateshape()
+		console.log(cpoint)
+
 	}
 
+
+	//load and create obstacles
 	for (let i = 0; i < obstacle_data.length; i++) {
 		obstacles[i] = new RoundedRectangle(obstacle_data[i])
 		obst = obstacles[i]
@@ -229,6 +237,20 @@ function buildmap() {
 		obst.draw()
 		obst.updateshape()
 	}
+
+	//place players
+	shuffledspawnpoints = shuffle(spawnpointpos)
+	for (i = 0; i > players.length; i++) {
+		const p = players[i]
+		let x = shuffledspawnpoints[i].x
+		let y = shuffledspawnpoints[i].y
+		p.x = x
+		p.y = y
+	}
+
+
+
+
 
 }
 //window.addEventListener("keydown", taste);
@@ -255,6 +277,9 @@ function loop() {
 //* (0.995 * (0.05*p.boost+1)) //braucht noch ein speedlimit damit es spielbar ist
 
 	}
+
+
+
 
 	
 	checkifoffmap()
@@ -319,7 +344,7 @@ function checkcollision(radius){
 			//console.log(obstacle)
 			let [collided, distance, lot] = obstacle.checkifcollided(p.x, p.y, p.r, sizereference)
 			if (collided == "true") {
-				console.log(distance+"/"+lot)
+				//console.log(distance+"/"+lot)
 				
 
 
