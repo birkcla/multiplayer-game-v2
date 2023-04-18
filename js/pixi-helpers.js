@@ -19,7 +19,6 @@ function World(params) {
 
   this.stage = new PIXI.Stage(this.bgColor);
 
-  this.players = new PIXI.Stage();
   
  
   
@@ -73,7 +72,7 @@ function World(params) {
 
 
 
-World.prototype.render = function() {this.renderer.render(this.stage); this.renderer.render(this.players);};
+World.prototype.render = function() {this.renderer.render(this.stage);};
 World.prototype.add = function(obj) {this.actors.push(obj); this.stage.addChild(obj.sprite);};
 World.prototype.xToPx = function(xUnit) {return (xUnit - this.minUnits.x) * this.pxPerUnit;}
 World.prototype.yToPx = function(yUnit) {return this.hPx - (yUnit - this.minUnits.y) * this.pxPerUnit;}
@@ -238,19 +237,20 @@ class PCircle {
     this.graphic.endFill();
     this.draw()
     this.world.actors.push(this)
-    this.world.players.addChild(this.graphic);
+    this.world.stage.addChild(this.graphic);
     this.world.renderer.render(world.stage);
 
   }
-
-  
-
-
   destroy() {
     this.world.stage.removeChild(this.graphicscircle);
   }
   draw() {
     this.graphic.position = this.world.unitsToPx(this);
+  }
+  tofront() {
+    this.world.stage.removeChild(this.graphic)
+    this.world.stage.addChild(this.graphic)
+
   }
 }
 

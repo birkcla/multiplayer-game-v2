@@ -12,6 +12,14 @@ buildWorld();
 
 
 
+
+function translategamepos(input){
+	outputx = (input[0] * (sizereference / 300)) + zeropos[0]
+	outputy = (input[1] * (sizereference / 300)) + zeropos[1]
+	return [outputx, outputy]
+}
+
+
 function equal(v1, v2) {
 	let delta = [(v2[0] - v1[0]), (v2[1] - v1[1])]
 	let dist = (delta[0]**2 + delta[1]**2)**0.5
@@ -240,12 +248,12 @@ function buildmap() {
 
 	//place players
 	shuffledspawnpoints = shuffle(spawnpointpos)
-	for (i = 0; i > players.length; i++) {
+	for (i = 0; i < players.length; i++) {
 		const p = players[i]
-		let x = shuffledspawnpoints[i].x
-		let y = shuffledspawnpoints[i].y
-		p.x = x
-		p.y = y
+		let pos = translategamepos([shuffledspawnpoints[i].x, shuffledspawnpoints[i].y])
+		p.x = pos[0]
+		p.y = pos[1]
+		p.tofront()
 	}
 
 
