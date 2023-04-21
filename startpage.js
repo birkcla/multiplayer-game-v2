@@ -1,3 +1,22 @@
+var windowx = window.innerWidth
+var windowy = window.innerHeight
+
+
+
+function adjustsize(){
+    if (windowx != window.innerWidth || windowy != window.innerHeight){
+        console.log("sizechange")
+
+        windowx = window.innerWidth
+        windowy = window.innerHeight
+        getreferences()
+        updatePlayerbox()
+    }
+    requestAnimationFrame(adjustsize)
+}
+
+adjustsize()
+
 function stringconvert(text){
     characters = []
     for (let i =0; i < text.length; i++){
@@ -139,6 +158,8 @@ async function animationstep(){
     if (gamerunning == false){
         requestAnimationFrame(animationstep)
     }
+
+    adjustsize()
 }
 
 

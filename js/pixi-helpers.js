@@ -15,7 +15,7 @@ function World(params) {
   this.fontColor = params.fontColor || "ffffff";
   
   this.renderer = new PIXI.autoDetectRenderer(this.wPx, this.hPx);
-  document.querySelector(".game").appendChild(this.renderer.view);  
+  params.object.appendChild(this.renderer.view);  
 
   this.stage = new PIXI.Stage(this.bgColor);
 
@@ -65,6 +65,7 @@ function World(params) {
     this.koordinatenachse(params.coords);
   }
   
+  this.render()
   this.actors = [];
 
   return this;
@@ -86,6 +87,7 @@ World.prototype.koordinatenachse = function(params) {
   var params = params || {};
   var step = params.step || 100;
   var world = this;
+  
 //  var koordinatenachse = new PIXI.Graphics();
 //  koordinatenachse.lineStyle(4, 0xFFFFFF, 1);
 //  koordinatenachse.moveTo(0, maxHeight);
@@ -252,6 +254,48 @@ class PCircle {
     this.world.stage.addChild(this.graphic)
 
   }
+  updateshape(){
+    this.graphic.clear
+    this.graphic.beginFill(this.color);
+    this.graphic.drawCircle(0, 0, world.pxPerUnit * this.r);
+    this.graphic.endFill();
+  }
+}
+
+
+
+class playerboxCircle {
+  constructor(params) {
+    var params = params || {};
+    this.playerbox = params.world || playerbox;
+    this.x = params.x || 0;
+    this.y = params.y || 0;
+    this.color = params.color || 0xaa0000;
+    this.alpha = params.alpha || 1;
+    this.r = params.r || 1;
+    this.graphic = new PIXI.Graphics();
+    this.graphic.beginFill(this.color);
+    this.graphic.drawCircle(0, 0, playerbox.pxPerUnit * this.r);
+    this.graphic.endFill();
+    this.draw()
+    this.playerbox.actors.push(this)
+    this.playerbox.stage.addChild(this.graphic);
+    this.playerbox.renderer.render(playerbox.stage);
+
+  }
+  destroy() {
+    this.playerbox.stage.removeChild(this.graphic);
+  }
+  draw() {
+    this.graphic.position = this.playerbox.unitsToPx(this);
+  }
+  tofront() {
+    this.playerbox.stage.removeChild(this.graphic)
+    this.playerbox.stage.addChild(this.graphic)
+
+  }
+
+  
 }
 
 

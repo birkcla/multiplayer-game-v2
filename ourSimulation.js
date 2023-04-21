@@ -1,14 +1,19 @@
 
+var windowx = window.innerWidth
+var windowy = window.innerHeight
 circle2size = 70
 circlesize = 60
-const playerradius = 10
+
+const playerradius = 5
 color = [(Math.floor(Math.random() * 12)*30), ((Math.floor(Math.random() * 3) * 20) + 60), ((Math.floor(Math.random() * 4) * 20) + 40)]
 console.log(color);
 
 let ws = startSocket()
 let sizereference
-
+getreferences();
 buildWorld();
+let colors = []
+let playerskilled = []
 
 
 
@@ -99,12 +104,13 @@ function buildWorld() {
 		hUnits: window.innerHeight,
 		wUnits: window.innerWidth,
 		hPx: window.innerHeight,
-		wpx: window.innerWidth,
+		wPx: window.innerWidth,
 		bgColor: "0x000000",
 		coords: {step: 100},
 		unit: "px",
 		minUnits: {x: 0, y: 0},
-		fontColor: "#ffffff"
+		fontColor: '#ffffff',
+		object: document.querySelector(".game")
 	});
 
 	//l = drawLine({from: {x: 0, y: 100}, to: {x: 6000, y: 0}})
@@ -126,10 +132,10 @@ players = []
 
 
 function create_player(id) {
-	
 	let temp = hsvToHex(color)
 	let color2 = parseInt(temp.slice(1), 16)
 	let player = new PCircle({r: 20, x: 0, y: 0, color:color2});
+	player.r = playerradius * (sizereference / 300)
 	player.vx = 0
 	player.vy = 0
 	player.ax = 0
@@ -141,6 +147,8 @@ function create_player(id) {
 	players.push(player)
 	changecolor()
 	
+	player.updateshape()
+
 	return player
 }
 
@@ -152,15 +160,28 @@ function checkifoffmap() {
 			plattform.color = 0xcc0000
 		}else{
 			plattform.color = 0x00cc00
+			killplayer(p)
 		}
 		plattform.updateshape(sizereference)
 	}
 }
 
 function killplayer(p) {
+	
+	let x
 	//p.x = -420000
 	ws.sendToUser('GameOver', p.id)
-	players = players.filter(function(name) {return name !== p.id})
+	console.log(players)
+	console.log(p.id)
+	//players = players.filter(function(id) {return id.toString() !== p.id.toString()})   geht nicht!!!!
+	for (let k of players){
+		if (k.id == p.id){
+			x = k
+		}
+	}
+	players.splice(x, 1)
+
+	playerskilled.push(p)
 	p.stepstogo = 128
 }
 
@@ -224,7 +245,7 @@ function buildmap() {
 		pos = [spawnpointpos[i].x, spawnpointpos[i].y]
 		cpoint = new spawnpoint({position: pos})
 		spawnpoints[i] = cpoint
-		cpoint.radius = playerradius * 2
+		cpoint.radius = (playerradius * (sizereference / 300))*2
 		cpoint.active = true
 		cpoint.updateshape()
 		console.log(cpoint)
@@ -272,6 +293,16 @@ function buildmap() {
 function loop() {
 
 	
+	if (windowx != window.innerWidth || windowy != window.innerHeight){
+			console.log("sizechange")
+
+		windowx = window.innerWidth
+		windowy = window.innerHeight
+		getreferences()
+		updatePlayerbox()
+	}
+
+	
 	
 
 	for (let p of players) {
@@ -287,6 +318,26 @@ function loop() {
 	}
 
 
+	for (let p of playerskilled) {
+		debugger
+		p.vx += 4*(p.ax/(2**0.5)) 
+		p.vy -= 4*(p.ay/(2**0.5)) 
+		p.vx = 0.995 * p.vx
+		p.vy = 0.995 * p.vy 			//* (0.995 * (0.05*p.boost+1)) //braucht noch ein speedlimit damit es spielbar ist
+		p.x += p.vx * dt 
+		p.y += p.vy * dt
+		p.r = (playerradius * (sizereference / 300)) * (p.stepstogo / 128)
+		p.stepstogo -= 1
+		if (p.stepstogo <= 0){
+			p.destroy()
+		}
+		p.updateshape()
+	}
+
+
+	
+
+
 
 
 	
@@ -294,7 +345,7 @@ function loop() {
 
 	world.update();
 
-	checkcollision(7)
+	checkcollision(playerradius * (sizereference / 300))
 }
 
 
@@ -321,17 +372,23 @@ function findPlayerById(id) {
 
 
 function userchange(data) {
+	
 	console.log("user just changed"+data);
 	for (let i of data.slice(1)){
 		player = findPlayerById(i)
+		
 		if (!player){
 			player = create_player(i)
 			msg = ['color', player.colorhsv[0], player.colorhsv[1], player.colorhsv[2]]
 			console.log("now would be the time to send"+msg+"----"+i)
 			ws.sendToUser(msg, i)
+			colors = []
+			for (let p of players) {
+				colors.push(p.color)
+			}
+			updatePlayerbox()
 		}
-		
-
+	
 	}
 	
 }
