@@ -3,6 +3,7 @@ playerboxelement = document.getElementById("playerboxrender")
 width = playerboxelement.clientWidth
 height = playerboxelement.clientHeight
 stepsize = 1
+const noplayerbox = document.getElementById("noplayerbox")
 
 
 playerbox = new World({
@@ -27,6 +28,12 @@ let colorsdrawn = []
 
 function updatePlayerbox(){
     
+    if (colors.length > 0) {
+        noplayerbox.style.display = "none"
+    }else{
+        noplayerbox.style.display = "block"
+
+    }
     for (let i of colorsdrawn){
         i.destroy()
     }

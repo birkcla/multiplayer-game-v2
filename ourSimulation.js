@@ -14,6 +14,7 @@ getreferences();
 buildWorld();
 let colors = []
 let playerskilled = []
+let playersdead = []
 
 
 
@@ -167,7 +168,7 @@ function checkifoffmap() {
 }
 
 function killplayer(p) {
-	
+	console.log("killing"+p.id)
 	let x
 	//p.x = -420000
 	ws.sendToUser('GameOver', p.id)
@@ -180,6 +181,8 @@ function killplayer(p) {
 		}
 	}
 	players.splice(x, 1)
+	p.uvx = p.vx
+	p.uvy = p.vy
 
 	playerskilled.push(p)
 	p.stepstogo = 128
@@ -308,8 +311,8 @@ function loop() {
 	for (let p of players) {
 		p.vx += 4*(p.ax/(2**0.5)) 
 		p.vy -= 4*(p.ay/(2**0.5)) 
-		p.vx = 0.995 * p.vx
-		p.vy = 0.995 * p.vy 			//* (0.995 * (0.05*p.boost+1)) //braucht noch ein speedlimit damit es spielbar ist
+		p.vx = 0.99 * p.vx
+		p.vy = 0.99 * p.vy 			//* (0.995 * (0.05*p.boost+1)) //braucht noch ein speedlimit damit es spielbar ist
 		p.x += p.vx * dt 
 		p.y += p.vy * dt 
 //* (0.995 * (0.05*p.boost+1))
@@ -318,20 +321,22 @@ function loop() {
 	}
 
 
-	for (let p of playerskilled) {
-		debugger
-		p.vx += 4*(p.ax/(2**0.5)) 
-		p.vy -= 4*(p.ay/(2**0.5)) 
-		p.vx = 0.995 * p.vx
-		p.vy = 0.995 * p.vy 			//* (0.995 * (0.05*p.boost+1)) //braucht noch ein speedlimit damit es spielbar ist
+	for (let i = 0; i < playerskilled.length; i++) {
+		p = playerskilled[i]
+		p.vx =  p.uvx * (p.stepstogo / 128)
+		p.vy =  p.uvy * (p.stepstogo / 128)			//* (0.995 * (0.05*p.boost+1)) //braucht noch ein speedlimit damit es spielbar ist
 		p.x += p.vx * dt 
 		p.y += p.vy * dt
 		p.r = (playerradius * (sizereference / 300)) * (p.stepstogo / 128)
-		p.stepstogo -= 1
+		p.stepstogo -= 8
 		if (p.stepstogo <= 0){
+			debugger
 			p.destroy()
+			playerskilled.splice(i, 1)
+			playersdead.push(p)
 		}
 		p.updateshape()
+		console.log(p.r)
 	}
 
 
@@ -374,21 +379,23 @@ function findPlayerById(id) {
 function userchange(data) {
 	
 	console.log("user just changed"+data);
-	for (let i of data.slice(1)){
-		player = findPlayerById(i)
-		
-		if (!player){
-			player = create_player(i)
-			msg = ['color', player.colorhsv[0], player.colorhsv[1], player.colorhsv[2]]
-			console.log("now would be the time to send"+msg+"----"+i)
-			ws.sendToUser(msg, i)
-			colors = []
-			for (let p of players) {
-				colors.push(p.color)
+	if (players.length < 8){
+		for (let i of data.slice(1)){
+			player = findPlayerById(i)
+			
+			if (!player){
+				player = create_player(i)
+				msg = ['color', player.colorhsv[0], player.colorhsv[1], player.colorhsv[2]]
+				console.log("now would be the time to send"+msg+"----"+i)
+				ws.sendToUser(msg, i)
+				colors = []
+				for (let p of players) {
+					colors.push(p.color)
+				}
+				updatePlayerbox()
 			}
-			updatePlayerbox()
+		
 		}
-	
 	}
 	
 }

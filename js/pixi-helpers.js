@@ -255,7 +255,7 @@ class PCircle {
 
   }
   updateshape(){
-    this.graphic.clear
+    this.graphic.clear()
     this.graphic.beginFill(this.color);
     this.graphic.drawCircle(0, 0, world.pxPerUnit * this.r);
     this.graphic.endFill();
