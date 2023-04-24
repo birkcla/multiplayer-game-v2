@@ -27,7 +27,8 @@ let colorsdrawn = []
 
 
 function updatePlayerbox(){
-    
+        
+
     if (colors.length > 0) {
         noplayerbox.style.display = "none"
     }else{
@@ -37,7 +38,6 @@ function updatePlayerbox(){
     for (let i of colorsdrawn){
         i.destroy()
     }
-    debugger
     colorsdrawn = []
 
     w = playerboxelement.clientWidth
@@ -60,6 +60,8 @@ function updatePlayerbox(){
         colorsdrawn[i] = new playerboxCircle({r:radius, x:posx, y:center[1], color: color})
         posx += step
     }
+
+    playerbox.renderer.render(playerbox.stage)
     
 
 }

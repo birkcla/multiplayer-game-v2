@@ -235,7 +235,7 @@ class PCircle {
     this.r = params.r || 1;
     this.graphic = new PIXI.Graphics();
     this.graphic.beginFill(this.color);
-    this.graphic.drawCircle(0, 0, world.pxPerUnit * this.r);
+    this.graphic.drawCircle(0, 0, this.r);
     this.graphic.endFill();
     this.draw()
     this.world.actors.push(this)
@@ -257,7 +257,7 @@ class PCircle {
   updateshape(){
     this.graphic.clear()
     this.graphic.beginFill(this.color);
-    this.graphic.drawCircle(0, 0, world.pxPerUnit * this.r);
+    this.graphic.drawCircle(0, 0, this.r);
     this.graphic.endFill();
   }
 }

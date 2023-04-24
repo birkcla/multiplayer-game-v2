@@ -77,6 +77,7 @@ async function startSocket() {
 	sessionStorage.user = sessionStorage.user || `Host`;
 	ws = await WS.connect('kugelspiel6', sessionStorage.user);
 	//console.log(`${ws.username} connected!`, ws);
+	
 	ws.onMessage(message);
 	ws.onUserStatus(userchange);
 }	
@@ -154,6 +155,7 @@ function create_player(id) {
 }
 
 function checkifoffmap() {
+	console.log("checking if  offmap")
 	for (let p of players) {
 		let collided = (plattform.checkifcollided(p.x, p.y, p.r, sizereference))[0]
 		//console.log(p.x, p.y, collided)
@@ -161,6 +163,7 @@ function checkifoffmap() {
 			plattform.color = 0xcc0000
 		}else{
 			plattform.color = 0x00cc00
+
 			killplayer(p)
 		}
 		plattform.updateshape(sizereference)
@@ -168,18 +171,14 @@ function checkifoffmap() {
 }
 
 function killplayer(p) {
+
 	console.log("killing"+p.id)
-	let x
+	let x = players.indexOf(p)
 	//p.x = -420000
 	ws.sendToUser('GameOver', p.id)
 	console.log(players)
 	console.log(p.id)
 	//players = players.filter(function(id) {return id.toString() !== p.id.toString()})   geht nicht!!!!
-	for (let k of players){
-		if (k.id == p.id){
-			x = k
-		}
-	}
 	players.splice(x, 1)
 	p.uvx = p.vx
 	p.uvy = p.vy
@@ -206,7 +205,13 @@ function setup() {
 	testi2.vy = -80 */
 
 	//build scene
-	
+
+	testi2 = create_player("testi2")
+	let temp = translategamepos([-10, 50])
+	testi2.x = temp[0]
+	testi2.y = temp[1]
+	testi2.vx = - 30
+	console.log("created testi2")
 
 }
 
@@ -278,6 +283,7 @@ function buildmap() {
 		p.x = pos[0]
 		p.y = pos[1]
 		p.tofront()
+		console.log("shuffled distr")
 	}
 
 
@@ -302,12 +308,13 @@ function loop() {
 		windowx = window.innerWidth
 		windowy = window.innerHeight
 		getreferences()
+
 		updatePlayerbox()
 	}
 
 	
 	
-
+	console.log(players)
 	for (let p of players) {
 		p.vx += 4*(p.ax/(2**0.5)) 
 		p.vy -= 4*(p.ay/(2**0.5)) 
@@ -317,6 +324,7 @@ function loop() {
 		p.y += p.vy * dt 
 //* (0.995 * (0.05*p.boost+1))
 //* (0.995 * (0.05*p.boost+1)) //braucht noch ein speedlimit damit es spielbar ist
+		
 
 	}
 
@@ -330,7 +338,7 @@ function loop() {
 		p.r = (playerradius * (sizereference / 300)) * (p.stepstogo / 128)
 		p.stepstogo -= 8
 		if (p.stepstogo <= 0){
-			debugger
+			//debugger
 			p.destroy()
 			playerskilled.splice(i, 1)
 			playersdead.push(p)
@@ -341,7 +349,6 @@ function loop() {
 
 
 	
-
 
 
 
@@ -377,27 +384,44 @@ function findPlayerById(id) {
 
 
 function userchange(data) {
-	
 	console.log("user just changed"+data);
 	if (players.length < 8){
 		for (let i of data.slice(1)){
 			player = findPlayerById(i)
 			
-			if (!player){
-				player = create_player(i)
-				msg = ['color', player.colorhsv[0], player.colorhsv[1], player.colorhsv[2]]
-				console.log("now would be the time to send"+msg+"----"+i)
-				ws.sendToUser(msg, i)
-				colors = []
-				for (let p of players) {
-					colors.push(p.color)
+			if (i != "Host"){
+				if (!player){
+					player = create_player(i)
+					msg = ['color', player.colorhsv[0], player.colorhsv[1], player.colorhsv[2]]
+					console.log("now would be the time to send"+msg+"----"+i)
+					ws.sendToUser(msg, i)	
 				}
-				updatePlayerbox()
 			}
-		
+			
 		}
 	}
+
 	
+	for (let n = 0; n < players.length; n++) {
+		let p = players[n]
+		let stillexists = false
+		for (let i of data.slice(1)){
+			if (p.id == i){
+				stillexists = true
+			}
+		}
+		if (stillexists == false){
+			p.destroy
+			players.splice(n, 1)
+		}
+	}
+
+	//update playerbox
+	colors = []
+	for (let p of players) {
+		colors.push(p.color)
+	}
+	updatePlayerbox()
 }
 
 function checkcollision(radius){
