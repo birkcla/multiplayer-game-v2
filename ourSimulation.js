@@ -16,6 +16,9 @@ let colors = []
 let playerskilled = []
 let playersdead = []
 
+let won = false
+let winner
+
 
 
 
@@ -38,34 +41,14 @@ function equal(v1, v2) {
 }
 
 
-const spawnpointpos = [
-	{n: 1, x: 65, y: 70},
-	{n: 2, x: 25, y: 30},
-	{n: 3, x: 60, y: 180},
-	{n: 4, x: 180, y: 150},
 
-	{n: 5, x: 250, y: 30},
-	{n: 6, x: 260, y: 120},
-	{n: 7, x: 130, y: 140},
-	{n: 8, x: 125, y: 25},
-	
-]
+let timedespawn = 0.1
 
 
 // obstacles have to be updated after creating in order to pass them the sizereference which is defined later in the script
 //the x & y position is where their left upper corner should be on the game map which has the aspect ration of 2/3.
 //the max coordinates are x = 300 & y = 200
-obstacle_data = [
-	{id: 0001, xg: 40, yg: 100, width: 10, height: 90, radius: 3, color: 0x804d4d, csyst: "game"},
-	{id: 0002, xg: 70, yg: 100, width: 50, height: 10, radius: 3, color: 0x804d4d, csyst: "game"},
-	{id: 0003, xg: 40, yg: 50, width: 40, height: 10, radius: 3, color: 0x804d4d, csyst: "game"},
-	{id: 0003, xg: 180, yg: 75, width: 80, height: 15, radius: 3, color: 0x804d4d, csyst: "game"},
-	{id: 0003, xg: 220, yg: 150, width: 10, height: 50, radius: 3, color: 0x804d4d, csyst: "game"},
-	{id: 0003, xg: 150, yg: 180, width: 10, height: 50, radius: 3, color: 0x804d4d, csyst: "game"},
-	{id: 0003, xg: 50, yg: 165, width: 110, height: 10, radius: 3, color: 0x804d4d, csyst: "game"},
-	{id: 0003, xg: 140, yg: 80, width: 10, height: 60, radius: 3, color: 0x804d4d, csyst: "game"}
 
-]
 
 
 
@@ -80,6 +63,8 @@ async function startSocket() {
 	
 	ws.onMessage(message);
 	ws.onUserStatus(userchange);
+
+	ws.sendToAll(['reload'])
 }	
 
 
@@ -108,7 +93,7 @@ function buildWorld() {
 		hPx: window.innerHeight,
 		wPx: window.innerWidth,
 		bgColor: "0x000000",
-		coords: {step: 100},
+		//coords: {step: 100},
 		unit: "px",
 		minUnits: {x: 0, y: 0},
 		fontColor: '#ffffff',
@@ -155,16 +140,12 @@ function create_player(id) {
 }
 
 function checkifoffmap() {
-	console.log("checking if  offmap")
+	//console.log("checking if  offmap")
 	for (let p of players) {
 		let collided = (plattform.checkifcollided(p.x, p.y, p.r, sizereference))[0]
 		//console.log(p.x, p.y, collided)
-		if (collided == "true") {
-			plattform.color = 0xcc0000
-		}else{
-			plattform.color = 0x00cc00
-
-			killplayer(p)
+		if (collided != "true") {
+		killplayer(p)
 		}
 		plattform.updateshape(sizereference)
 	}
@@ -175,7 +156,7 @@ function killplayer(p) {
 	console.log("killing"+p.id)
 	let x = players.indexOf(p)
 	//p.x = -420000
-	ws.sendToUser('GameOver', p.id)
+	ws.sendToUser(['gameover'], p.id)
 	console.log(players)
 	console.log(p.id)
 	//players = players.filter(function(id) {return id.toString() !== p.id.toString()})   geht nicht!!!!
@@ -207,10 +188,10 @@ function setup() {
 	//build scene
 
 	testi2 = create_player("testi2")
-	let temp = translategamepos([-10, 50])
+	let temp = translategamepos([10, 50])
 	testi2.x = temp[0]
 	testi2.y = temp[1]
-	testi2.vx = - 30
+	testi2.vx = 40
 	console.log("created testi2")
 
 }
@@ -302,6 +283,7 @@ function buildmap() {
 function loop() {
 
 	
+	// check for resizing ----------------------------------------------------------
 	if (windowx != window.innerWidth || windowy != window.innerHeight){
 			console.log("sizechange")
 
@@ -314,7 +296,7 @@ function loop() {
 
 	
 	
-	console.log(players)
+	//animation step players ----------------------------------------------------------
 	for (let p of players) {
 		p.vx += 4*(p.ax/(2**0.5)) 
 		p.vy -= 4*(p.ay/(2**0.5)) 
@@ -329,6 +311,9 @@ function loop() {
 	}
 
 
+
+	//animationstep (killedplayers)   ----------------------------------------------------------
+	
 	for (let i = 0; i < playerskilled.length; i++) {
 		p = playerskilled[i]
 		p.vx =  p.uvx * (p.stepstogo / 128)
@@ -344,20 +329,66 @@ function loop() {
 			playersdead.push(p)
 		}
 		p.updateshape()
-		console.log(p.r)
+		//console.log(p.r)
 	}
 
 
+	//animationstep spawnpoints
+
+	for (let spp of spawnpoints){
+		if (spp.active == true){
+			let state = false
+			for (let p of players){
+				let dist = ((p.x - spp.x)**2 + (p.y - spp.y)**2)**0.5
+				if (dist < spp.radius + p.r){
+					state = true
+				}
+			}
+			
+			if (state == false){
+				spp.active = false
+				spp.updateshape()
+			}
+		}else{
+			if (spp.radius > 1){
+				let prior = spp.radius
+				spp.radius -= ((playerradius * (sizereference / 300))*2) / (framerate * timedespawn)
+				spp.updateshape()
+			}else{
+				spp.destroy()
+				let x = spawnpoints.indexOf(spp)
+				spawnpoints.splice(x, 1)
+			}
+		}
+
+	}
+
+	//check if won
 	
+	if (players.length == 1) {
+		p = players[0]
+		if (p.r < (sizereference * 10)){
+			p.r = p.r**1.05
+			p.updateshape()
+		}else{
+			winner = p
+			players = []
+			won = true
+			clearInterval(loopref)
+			setTimeout(toggleEndscreen, 500)
+		}
+	}else{
+		checkifoffmap()
+		checkcollision()
 
-
+	}
 
 	
-	checkifoffmap()
+	
+	
 
 	world.update();
 
-	checkcollision(playerradius * (sizereference / 300))
 }
 
 
@@ -384,6 +415,7 @@ function findPlayerById(id) {
 
 
 function userchange(data) {
+	
 	console.log("user just changed"+data);
 	if (players.length < 8){
 		for (let i of data.slice(1)){
@@ -424,7 +456,7 @@ function userchange(data) {
 	updatePlayerbox()
 }
 
-function checkcollision(radius){
+function checkcollision(){
 	//check for barrier collisions
 
 
@@ -513,7 +545,7 @@ function checkcollision(radius){
 			distancey = p.y - p2.y
 			distance = (distancex**2 + distancey**2)**0.5
 
-			if (distance <= radius) {
+			if (distance <= (p.r + p2.r)) {
 				collidep(p, p2)
 			}
 

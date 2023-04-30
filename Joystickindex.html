@@ -63,26 +63,48 @@
     #gameover {
       display: none;
       position: fixed;
+      background-color: black;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background-color:black;
       opacity: 1;
-      z-index: 105;
+      z-index: 109;
     }
 
     #winner {
       display: none;
       position: fixed;
+      background-color: black;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background-color:black;
       opacity: 1;
       z-index: 108;
     }
+
+    #winnertext {
+      position: absolute;
+      color: aliceblue;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 200%;
+      font-weight: 800;
+    }
+
+    #gameovertext {
+      position: absolute;
+      color: aliceblue;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 200%;
+      font-weight: 800;
+    }
+
+
 
     </style>
     <script src="WebsocketClient.js"></script>
@@ -127,12 +149,12 @@
 
 
     <div id="gameover">
-
+      <div id="gameovertext">Game over</div>
     </div>
 
 
     <div id="winner">
-      
+      <div id="winnertext">You won!!!</div>
     </div>
 
     
@@ -210,16 +232,24 @@
             console.log(colorhex)
             document.body.style.backgroundColor = colorhex;
             document.querySelector('#pre-game-screen').style.backgroundColor = colorhex;
+            document.querySelector('#winner').style.backgroundColor = colorhex;
           }
           if (msg.data[0] == 'gameover') {
-            document.querySelector('#gameover').style.display = block;
+            document.querySelector('#gameover').style.display = 'block';
           }
+
           if (msg.data[0] == 'winner') {
-            document.querySelector('#winner').style.display = block;
+            document.querySelector('#winner').style.display = 'block';
+            console.log("just done the winnerscreen")
           }
 
           if (msg.data[0] == 'start') {
             document.querySelector('#pre-game-screen').style.display = 'none';
+          }
+
+          if (msg.data[0] == 'reload') {
+            console.log("reloading")
+            location.reload()
           }
 
           

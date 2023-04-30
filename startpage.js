@@ -1,6 +1,6 @@
 var windowx = window.innerWidth
 var windowy = window.innerHeight
-
+let loopref
 
 
 function adjustsize(){
@@ -90,7 +90,7 @@ function startgame(){
     getreferences();
     buildmap();
     setup();
-    loopStart();
+    loopref = loopStart();
 
     if (animations == true){
         gamestarted = true
@@ -241,7 +241,7 @@ if (animations == true) {
     //agonew
 
     //initialize
-    framerate = 60
+
 
     var timems = 0
     var triggertime = 0
@@ -273,7 +273,9 @@ if (animations == true) {
     //start animationloop
 
     //setInterval(animationstep, 1000/framerate)
+
     requestAnimationFrame(animationstep)
+   
 
 
 }

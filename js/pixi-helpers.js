@@ -244,7 +244,7 @@ class PCircle {
 
   }
   destroy() {
-    this.world.stage.removeChild(this.graphicscircle);
+    this.world.stage.removeChild(this.graphic);
   }
   draw() {
     this.graphic.position = this.world.unitsToPx(this);
@@ -515,7 +515,7 @@ class spawnpoint {
 
   
   destroy() {
-    this.world.stage.removeChild(this.graphicscircle);
+    this.world.stage.removeChild(this.graphic);
   }
   draw() {
     
