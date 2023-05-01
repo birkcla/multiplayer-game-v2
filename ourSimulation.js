@@ -298,8 +298,8 @@ function loop() {
 	
 	//animation step players ----------------------------------------------------------
 	for (let p of players) {
-		p.vx += 4*(p.ax/(2**0.5)) 
-		p.vy -= 4*(p.ay/(2**0.5)) 
+		p.vx += 4*(2*p.ax/(2**0.5)) 
+		p.vy -= 4*(2*p.ay/(2**0.5)) 
 		p.vx = 0.99 * p.vx
 		p.vy = 0.99 * p.vy 			//* (0.995 * (0.05*p.boost+1)) //braucht noch ein speedlimit damit es spielbar ist
 		p.x += p.vx * dt 
