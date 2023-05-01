@@ -186,14 +186,14 @@ function setup() {
 	testi2.vy = -80 */
 
 	//build scene
-
+/* 
 	testi2 = create_player("testi2")
 	let temp = translategamepos([10, 50])
 	testi2.x = temp[0]
 	testi2.y = temp[1]
 	testi2.vx = 40
 	console.log("created testi2")
-
+ */
 }
 
 function getreferences() {
